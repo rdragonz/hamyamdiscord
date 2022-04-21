@@ -354,7 +354,7 @@ async def _help(ctx):
 /bands - Display ARRL ham bands document
 /dmridbycall <CALLSIGN> - Look up a DMR ID by callsign
 /callbydmrid <DMR ID> - Look up a callsign by DMR ID
-/ziptogrid <US Zipcode> - Obtain the Miadenhead gridsquare of a United States Zipcode.
+/ziptogrid <US Zipcode> - Obtain the Maidenhead gridsquare of a United States Zipcode.
 /help - Display this help document
 /ping - Display SlashCommand to Bot to API Latency. Used for debug purposes.
 
