@@ -4,3 +4,4 @@ discord.py>=3.10.0.2
 numpy>=1.21.2
 maidenhead>=1.6.0
 discord-py-slash-command>=3.0.1
+zipcodes>=1.2.0
