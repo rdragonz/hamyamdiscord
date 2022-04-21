@@ -31,6 +31,7 @@ import numpy as np
 import maidenhead as mh
 import json
 import random
+import zipcodes
 
 
 # Define global objects
@@ -260,6 +261,37 @@ def call_by_dmrid(callsign):
 
 	return message
 
+def ziptogrid(zipcode):
+	# Quick validity check
+	try:
+		int(zipcode)
+
+	except ValueError:
+		return "The entered Zipcode does not appear to be a valid United States Zipcode."
+
+	if len(zipcode) != 5:
+		return "The entered Zipcode does not appear to be a valid United States Zipcode."
+
+	try:
+		zipParsed = zipcodes.matching(zipcode)
+		if len(zipParsed) == 0:
+			return "The entered Zipcode was unable to be located. Is it a valid United States Zipcode?"
+
+	except ValueError:
+		return "The entered Zipcode does not appear to be a valid United States Zipcode."
+
+	# Convert to Gridsquare
+	lat = float(zipParsed[0]['lat'])
+	lon = float(zipParsed[0]['long'])
+	state = zipParsed[0]['state']
+	city = zipParsed[0]['city']
+
+	gridsquare = mh.to_maiden(lat, lon)
+
+	message = "**{0}, {1} {2}**\n{3}, {4}\n\n**Gridsquare:** {5}".format(city, state, zipcode, lat, lon, gridsquare)
+
+	return message
+
 # Define commands
 
 @slash.slash(name="dmridbycall", description="Look up a DMR ID by callsign",options=[
@@ -322,8 +354,10 @@ async def _help(ctx):
 /bands - Display ARRL ham bands document
 /dmridbycall <CALLSIGN> - Look up a DMR ID by callsign
 /callbydmrid <DMR ID> - Look up a callsign by DMR ID
+/ziptogrid <US Zipcode> - Obtain the Miadenhead gridsquare of a United States Zipcode.
 /help - Display this help document
 /ping - Display SlashCommand to Bot to API Latency. Used for debug purposes.
+
 
 HAMYAM bot originally created for Telegram by V
 Ported to Discord by Red in 2021
@@ -334,7 +368,7 @@ https://github.com/rdragonz/hamyamdiscord
 This version of HAMYAM bot is licensed under the GNU General Public License v3.0
 For more information on the GPLv3.0 visit https://www.gnu.org/licenses/gpl-3.0.en.html
 	
-HAMYAMDiscord v1.00 10/03/2021
+HAMYAMDiscord v2.00 04/20/2022
 ```
 	""")
 
@@ -349,6 +383,17 @@ async def _muf(ctx):
 @slash.slash(name="bands", description="Display ARRL ham bands document", guild_ids=GUILD_IDS)
 async def _bands(ctx):
   await ctx.send("https://i.imgur.com/j18VSeB.png")
+
+@slash.slash(name="ziptogrid", description="Convert a United States Zipcode to a Maidenhead gridsquare location",options=[
+			   create_option(
+				 name="zipcode",
+				 description="United States Zip Code",
+				 option_type=3,
+				 required=True
+			   )], guild_ids=GUILD_IDS)
+async def _ziptogrid(ctx, zipcode: str):
+  await ctx.send(content=ziptogrid(zipcode))
+
 
 def main():
 	"""Run bot."""
