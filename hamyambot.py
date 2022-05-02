@@ -349,7 +349,7 @@ async def _help(ctx):
   await ctx.send("""```HELP FOR HAMYAM BOT:
 /lookup <CALLSIGN> - Look up a callsign on QRZ
 /conditions - Display current ham band conditions
-/distance <GRIDSQARE 1> <GRIDSQUARE 2> - Calculate distance between two Maidenhead gridsqare locators
+/distance <GRIDSQUARE 1> <GRIDSQUARE 2> - Calculate distance between two Maidenhead gridsqare locators
 /muf - Display current calculated Maximum Usable Frequency information
 /bands - Display ARRL ham bands document
 /dmridbycall <CALLSIGN> - Look up a DMR ID by callsign
