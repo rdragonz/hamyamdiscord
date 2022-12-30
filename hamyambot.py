@@ -71,12 +71,12 @@ def lookup_call(callsign):
 		"""Add a job to the queue."""
 
 		if len(callsign) < 3 or len(callsign) >= 15:
-			return 'Please provide a valid call sign.'
+			return '__**{}**__\nThis callsign does not appear to be valid.'.format(callsign)
 
 		outs = qrz_lookup(str(callsign))
 
 		if not outs:
-			return 'No results found on QRZ.com'
+			return '__**{}**__\nNo results found on QRZ.com'.format(callsign)
 		else:
 			message = str()
 
@@ -324,7 +324,7 @@ async def _callbydmrid(ctx, dmrid: str):
 async def _lookup(ctx, callsign: str):
   await ctx.send(content=lookup_call(callsign))
 
-@slash.slash(name="distance", description="Calculate distance between two Maidenhead gridsqare locators",options=[
+@slash.slash(name="distance", description="Calculate distance between two Maidenhead gridsquare locators",options=[
 			   create_option(
 				 name="gridsquare1",
 				 description="Gridsquare 1",
@@ -349,7 +349,7 @@ async def _help(ctx):
   await ctx.send("""```HELP FOR HAMYAM BOT:
 /lookup <CALLSIGN> - Look up a callsign on QRZ
 /conditions - Display current ham band conditions
-/distance <GRIDSQUARE 1> <GRIDSQUARE 2> - Calculate distance between two Maidenhead gridsqare locators
+/distance <GRIDSQUARE 1> <GRIDSQUARE 2> - Calculate distance between two Maidenhead gridsquare locators
 /muf - Display current calculated Maximum Usable Frequency information
 /bands - Display ARRL ham bands document
 /dmridbycall <CALLSIGN> - Look up a DMR ID by callsign
