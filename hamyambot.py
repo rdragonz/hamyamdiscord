@@ -19,6 +19,16 @@ DISCORD_TOKEN = '' # Remove before flight
 GUILD_IDS = [] # Remove before flight
 # ----- END SECRETS AND KEYS FOR BOT -----
 
+# GLOBALS
+
+QRZ_URL = "https://xmldata.qrz.com/xml/current/"
+QRZ_PROFILE = "https://www.qrz.com/db/"
+DMRID_URL = "https://www.radioid.net/api/dmr/user/"
+GRIDSQUARE_URL = "https://www.karhukoti.com/maidenhead-grid-square-locator/"
+CONDITIONS_URL = "http://www.hamqsl.com/solar101vhfpic.php"
+MUF_URL = "http://www.hamqsl.com/solarmuf.php"
+BANDS_URL = "https://i.imgur.com/j18VSeB.png"
+
 import logging
 import requests
 import xmltodict
@@ -55,13 +65,13 @@ def escapeChars(txt):
 		return temp
 
 def qrz_lookup(callsign):
-		url = '''https://xmldata.qrz.com/xml/current/?username={0}&password={1}'''.format(QRZ_USERNAME, QRZ_PASSWORD)
+		url = '''{0}?username={1}&password={2}'''.format(QRZ_URL, QRZ_USERNAME, QRZ_PASSWORD)
 		session = requests.Session()
 		r = session.get(url)
 		raw_session = xmltodict.parse(r.content)
 		session_key = raw_session.get('QRZDatabase').get('Session').get('Key')
 
-		url2 = """https://xmldata.qrz.com/xml/current/?s={0}&callsign={1}""".format(session_key, callsign)
+		url2 = """{0}?s={1}&callsign={2}""".format(QRZ_URL, session_key, callsign)
 		r2 = session.get(url2)
 		raw = xmltodict.parse(r2.content).get('QRZDatabase')
 		ham = raw.get('Callsign')
@@ -122,7 +132,7 @@ def lookup_call(callsign):
 			if 'grid' in outs:
 				grid_code = str(outs['grid'][:4])
 				# https://aprs.fi/#!addr=EM89
-				message += ' \[[{0}]({1})\]'.format(grid_code, 'https://www.karhukoti.com/maidenhead-grid-square-locator/?grid=' + str(grid_code))
+				message += ' \[[{0}]({1})\]'.format(grid_code, '{0}?grid='.format(GRIDSQUARE_URL) + str(grid_code))
 
 			if 'cqzone' in outs:
 				message += '\n**CQ Zone:** {0}'.format(str(outs['cqzone']))
@@ -164,7 +174,7 @@ def lookup_call(callsign):
 				message += '\n**QSL Manager:** {0}'.format(escapeChars(str(outs['qslmgr'])))
 
 
-			message += '\n[Profile on QRZ](https://www.qrz.com/db/{0})'.format(str(outs['call']).upper())
+			message += '\n[Profile on QRZ]({0}{1})'.format(QRZ_PROFILE, str(outs['call']).upper())
 
 			return message
 
@@ -198,7 +208,7 @@ def haversine_distance(lat1, lon1, lat2, lon2):
 		return np.round(res, 2)
 
 def dmr_by_call(callsign):
-	url = '''https://www.radioid.net/api/dmr/user/?callsign={0}'''.format(callsign)
+	url = '''{0}callsign={1}'''.format(DMRID_URL, callsign)
 	session = requests.Session()
 	r = session.get(url)
 	message = str()
@@ -230,7 +240,7 @@ def dmr_by_call(callsign):
 	return message
 
 def call_by_dmrid(callsign):
-	url = '''https://www.radioid.net/api/dmr/user/?id={0}'''.format(callsign)
+	url = '''{0}?id={1}'''.format(DMRID_URL, callsign)
 	session = requests.Session()
 	r = session.get(url)
 	message = str()
@@ -374,15 +384,15 @@ HAMYAMDiscord v3.00-BETA1 12/30/2022
 
 @slash.slash(name="conditions", description="Display current ham band conditions", guild_ids=GUILD_IDS)
 async def _conditions(ctx):
-  await ctx.send("http://www.hamqsl.com/solar101vhfpic.php?id={0}".format(random.randint(0, 9999999999)))
+  await ctx.send("{0}?id={1}".format(CONDITIONS_URL, random.randint(0, 9999999999)))
 
 @slash.slash(name="muf", description="Display current calculated Maximum Usable Frequency information", guild_ids=GUILD_IDS)
 async def _muf(ctx):
-  await ctx.send("http://www.hamqsl.com/solarmuf.php?id={0}".format(random.randint(0, 9999999999)))
+  await ctx.send("{0}?id={1}".format(MUF_URL, random.randint(0, 9999999999)))
 
 @slash.slash(name="bands", description="Display ARRL ham bands document", guild_ids=GUILD_IDS)
 async def _bands(ctx):
-  await ctx.send("https://i.imgur.com/j18VSeB.png")
+  await ctx.send("{0}".format(BANDS_URL))
 
 @slash.slash(name="ziptogrid", description="Convert a United States Zipcode to a Maidenhead gridsquare location",options=[
 			   create_option(
