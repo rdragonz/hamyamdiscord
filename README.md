@@ -4,11 +4,29 @@ HamYam bot ported to Discord
 ## Installation
 This bot requires a Discord API key, QRZ XML data access, and Python3.
 
-1. Edit the hamyambot.py file to include your credentials for Discord and QRZ
-2. Install required python libraries
-> python -m pip install -r requirements.txt; python -m pip install discord.py
+1. Install required python libraries from the requirements.txt file
+> python -m pip install -r requirements.txt
+2. Edit the hamyambot.py file to include your credentials for Discord and QRZ. See below for information on obtaining these credentials.
 3. Run the bot
 > python hamyambot.py
+
+## Configuration
+Information about the bot's configuration options is provided here. Values that are considered sensitive and not to be shared are tagged with "Remove before flight" for development reasons.
+
+### QRZ_USERNAME
+The username you would normally use to log in to QRZ. This will typically be your callsign or email address.
+
+### QRZ_PASSWORD
+The password you would normally use to log in to QRZ. This will be the password you set when logging in to QRZ. Best security practice does dictate that websites should strive to use API keys wherever possible, however QRZ does not offer API keys for accounts with XML data access.
+
+### DISCORD_TOKEN
+The Discord bot token, explained further below.
+
+### GUILD_IDS
+The Server IDs in list format for all of the servers that the bot is a part of. Instructions on how to obtain server IDs are listed below.
+
+### Global variables
+The bot uses several global variables to define the URLs used for various lookups and embeds. These are contained within several global variables, and should not be modified unless you know exactly what you are doing. Changes to these values may result in unexpected behavior!
 
 ## Creating a Discord bot
 This guide assumes that you have at least some familiarity with how bots are created from within the Discord developer portal, however some basic information about the correct permissions and inviting the bot to your server are provided here. 
