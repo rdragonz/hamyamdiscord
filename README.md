@@ -26,3 +26,5 @@ When editing the hamyambot.py file, there is a list for you to insert "guild IDs
 
 ## Usage
 Once the bot is running and added to a Discord server, you can then run commands to perform various functions. Run the "/help" command for a list of available commands, and their parameters, as well as to display other information about the bot. You can also type a single "/" to see a list of commands available to be run in your server.
+
+![](https://i.imgur.com/SeBfM4v.png)
