@@ -368,7 +368,7 @@ https://github.com/rdragonz/hamyamdiscord
 This version of HAMYAM bot is licensed under the GNU General Public License v3.0
 For more information on the GPLv3.0 visit https://www.gnu.org/licenses/gpl-3.0.en.html
 	
-HAMYAMDiscord v2.00 04/20/2022
+HAMYAMDiscord v3.00-BETA1 12/30/2022
 ```
 	""")
 
