@@ -35,7 +35,7 @@ This guide assumes that you have at least some familiarity with how bots are cre
 
 Follow the guide at https://discordpy.readthedocs.io/en/stable/discord.html for creating a Discord bot and inviting it to your server. The bot will need to be running and have the proper keys and credentials inserted into the hamyambot.py file before you can invite it to your server. When generating the OAUTH2 invitation URL, you will need to ensure that the following permissions are enabled for the bot to function properly:
 ![](https://i.imgur.com/MYkd0pB.png)
-![](https://i.imgur.com/1iBHUXU.png)
+![](https://i.imgur.com/5FSwjTT.png)
 
 Once you have configured these parameters, simply copy and paste the generated URL into your web browser to invite the bot to your server.
 
