@@ -23,12 +23,13 @@ GUILD_IDS = [] # Remove before flight
 
 QRZ_URL = "https://xmldata.qrz.com/xml/current/"
 QRZ_PROFILE = "https://www.qrz.com/db/"
-DMRID_URL = "https://www.radioid.net/api/dmr/user/"
+DMRID_URL = "https://www.radioid.net/api/dmr/user"
 GRIDSQUARE_URL = "https://www.karhukoti.com/maidenhead-grid-square-locator/"
 CONDITIONS_URL = "http://www.hamqsl.com/solar101vhfpic.php"
 MUF_URL = "http://www.hamqsl.com/solarmuf.php"
 BANDS_URL = "https://i.imgur.com/j18VSeB.png"
-VERSION_STRING = "HAMYAMDiscord v3.00-BETA2 01/16/2023"
+OSM_URL = "https://www.openstreetmap.org/"
+VERSION_STRING = "HAMYAMDiscord v3.00-BETA3 01/17/2023"
 
 import logging
 import requests
@@ -41,6 +42,7 @@ import maidenhead as mh
 import json
 import random
 import zipcodes
+import hashlib
 
 
 # Define global objects
@@ -58,8 +60,13 @@ def escapeChars(txt):
 	temp = temp.replace(')', '\)')
 	temp = temp.replace('+', '\+')
 	temp = temp.replace('!', '\!')
-	#temp = temp.replace('.', '\.')
 	return temp
+
+def callsign_color(callsign):
+	# Takes a pre-validated callsign and converts it into a hex color code.
+	md5sum = hashlib.md5(callsign.encode("utf-8")).hexdigest()
+	colorcode = int(md5sum[:6], 16)
+	return colorcode
 
 def qrz_lookup(callsign):
 	url = '''{0}?username={1}&password={2}'''.format(QRZ_URL, QRZ_USERNAME, QRZ_PASSWORD)
@@ -205,88 +212,135 @@ def haversine_distance(lat1, lon1, lat2, lon2):
 	return np.round(res, 2)
 
 def dmr_by_call(callsign):
-	url = '''{0}callsign={1}'''.format(DMRID_URL, callsign)
+	message = interactions.Embed(
+		title="**__DMR ID Report__**",
+		description=callsign.upper(),
+		color=callsign_color(callsign.upper())
+	)
+
+	if len(callsign) < 3 or len(callsign) >= 15:
+		message.add_field("Error", "This callsign does not appear to be valid.")
+		return message	
+	url = '''{0}?callsign={1}'''.format(DMRID_URL, callsign)
 	session = requests.Session()
 	r = session.get(url)
-	message = str()
+	
 	if not r:
-		message = "This callsign is not associated with a DMR ID."
+		message.add_field("Error", "This callsign is not associated with a DMR ID.")
 	else:
 		content = json.loads(r.content.decode("utf-8"))
 		if int(content["count"]) == 0:
-			message = "This callsign is not associated with a DMR ID."
+			message.add_field("Error", "This callsign is not associated with a DMR ID.")
 		else:
-			message += "**__DMR ID Report__**\n"
-			message += "**Callsign: **" + content["results"][0]["callsign"] + "\n"
 			if int(content["count"]) > 1:
-				message += "This callsign is assoicated with multiple DMR IDs\n**DMR IDs:** "
-			else:
-				message += "**DMR ID:** "
+				message.add_field("Note", "This callsign is associated with multiple DMR IDs")
+			ids = str()
 			count = content["count"]
 			for item in range(count):
-				message += str(content["results"][item]["id"])
+				ids += str(content["results"][item]["id"])
 				if item != (count-1):
-					message += ", "
-			message += "\n"
-			message += "**Name: **" + content["results"][0]["fname"] + " " + content["results"][0]["surname"] + "\n"
-			message += "**Country: **" + content["results"][0]["country"] + "\n"
-			message += "**Location: **" + content["results"][0]["city"]
+					ids += ", "
+			if int(content["count"]) > 1:
+				message.add_field("DMR IDs", ids)
+			else:
+				message.add_field("DMR ID", ids)
+			message.add_field("Name", content["results"][0]["fname"] + " " + content["results"][0]["surname"])
+			message.add_field("Country", content["results"][0]["country"])
+			loc = content["results"][0]["city"]
 			if content["results"][0]["state"] != "":
-				message += ", " + content["results"][0]["state"]
+				loc += ", " + content["results"][0]["state"]
+			message.add_field("Location", loc)
 
 	return message
 
 def call_by_dmrid(callsign):
+	
+
+	if len(callsign) != 7:
+		message = interactions.Embed(
+			title="**__DMR ID Report__**",
+			description=callsign.upper(),
+			color=16711680
+		)
+		message.add_field("Error", "This DMR ID does not appear to be valid.")
+		return message	
 	url = '''{0}?id={1}'''.format(DMRID_URL, callsign)
 	session = requests.Session()
 	r = session.get(url)
-	message = str()
+
+
+	
 	if not r:
-		message = "This DMR ID is not associated with a callsign."
+		message = interactions.Embed(
+			title="**__DMR ID Report__**",
+			description=callsign.upper(),
+			color=16711680
+		)
+		message.add_field("Error", "This DMR ID is not associated with a callsign.")
 	else:
 		content = json.loads(r.content.decode("utf-8"))
 		if int(content["count"]) == 0:
-			message = "This DMR ID is not associated with a callsign."
+			message = interactions.Embed(
+				title="**__DMR ID Report__**",
+				description=callsign.upper(),
+				color=16711680
+			)
+			message.add_field("Error", "This DMR ID is not associated with a callsign.")
 		else:
-			message += "**__DMR ID Report__**\n"
-			message += "**Callsign: **" + content["results"][0]["callsign"] + "\n"
+			message = interactions.Embed(
+				title="**__DMR ID Report__**",
+				description=callsign.upper(),
+				color=callsign_color(content["results"][0]["callsign"])
+			)
+			message.add_field("Callsign", content["results"][0]["callsign"])
 			if int(content["count"]) > 1:
-				message += "This callsign is assoicated with multiple DMR IDs\n**DMR IDs:** "
-			else:
-				message += "**DMR ID:** "
+				message.add_field("Note", "This callsign is associated with multiple DMR IDs")
+			ids = str()
 			count = content["count"]
 			for item in range(count):
-				message += str(content["results"][item]["id"])
+				ids += str(content["results"][item]["id"])
 				if item != (count-1):
-					message += ", "
-			message += "\n"
-			message += "**Name: **" + content["results"][0]["fname"] + " " + content["results"][0]["surname"] + "\n"
-			message += "**Country: **" + content["results"][0]["country"] + "\n"
-			message += "**Location: **" + content["results"][0]["city"]
+					ids += ", "
+			if int(content["count"]) > 1:
+				message.add_field("DMR IDs", ids)
+			else:
+				message.add_field("DMR ID", ids)
+			message.add_field("Name", content["results"][0]["fname"] + " " + content["results"][0]["surname"])
+			message.add_field("Country", content["results"][0]["country"])
+			loc = content["results"][0]["city"]
 			if content["results"][0]["state"] != "":
-				message += ", " + content["results"][0]["state"]
+				loc += ", " + content["results"][0]["state"]
+			message.add_field("Location", loc)
 
 	return message
 
 def ziptogrid(zipcode):
 	# Quick validity check
+	message = interactions.Embed(
+		title="**__Zipcode to Gridsquare__**",
+		description=zipcode,
+		color=7368816
+	)
 	try:
 		int(zipcode)
 
 	except ValueError:
-		return "The entered Zipcode does not appear to be a valid United States Zipcode."
+		message.add_field("Error", "The entered Zipcode does not appear to be a valid United States Zipcode.")
+		return message
 
 	if len(zipcode) != 5:
-		return "The entered Zipcode does not appear to be a valid United States Zipcode."
+		message.add_field("Error", "The entered Zipcode does not appear to be a valid United States Zipcode.")
+		return message
 
 	try:
 		zipParsed = zipcodes.matching(zipcode)
 		if len(zipParsed) == 0:
-			return "The entered Zipcode was unable to be located. Is it a valid United States Zipcode?"
+			message.add_field("Error", "The entered Zipcode was unable to be located. Is it a valid United States Zipcode?")
+			return message
 
 	except ValueError:
-		return "The entered Zipcode does not appear to be a valid United States Zipcode."
-
+		message.add_field("Error", "The entered Zipcode does not appear to be a valid United States Zipcode.")
+		return message
 	# Convert to Gridsquare
 	lat = float(zipParsed[0]['lat'])
 	lon = float(zipParsed[0]['long'])
@@ -295,7 +349,9 @@ def ziptogrid(zipcode):
 
 	gridsquare = mh.to_maiden(lat, lon)
 
-	message = "**{0}, {1} {2}**\n{3}, {4}\n\n**Gridsquare:** {5}".format(city, state, zipcode, lat, lon, gridsquare)
+	message.add_field("Location", "{0}, {1} {2}".format(city, state, zipcode))
+	message.add_field("Gridsquare", "[{1}]({0}?grid={1})".format(GRIDSQUARE_URL, gridsquare))
+	message.add_field("Coordinates", "[{0}, {1}]({2}?mlat={0}&mlon={1}&zoom=12)".format(lat, lon, OSM_URL))
 
 	return message
 
@@ -310,7 +366,7 @@ def ziptogrid(zipcode):
 			required=True,
 		),], scope=GUILD_IDS)
 async def _dmridbycall(ctx: interactions.CommandContext, callsign: str):
-	await ctx.send(dmr_by_call(callsign))
+	await ctx.send(embeds=dmr_by_call(callsign))
 
 @client.command(name="callbydmrid", description="Look up a callsign by DMR ID",options=[
 			interactions.Option(
@@ -320,7 +376,7 @@ async def _dmridbycall(ctx: interactions.CommandContext, callsign: str):
 			required=True
 			)], scope=GUILD_IDS)
 async def _callbydmrid(ctx: interactions.CommandContext, dmrid: str):
-	await ctx.send(call_by_dmrid(dmrid))
+	await ctx.send(embeds=call_by_dmrid(dmrid))
 
 @client.command(name="lookup", description="Look up a callsign on QRZ",options=[
 			interactions.Option(
@@ -378,19 +434,19 @@ For more information on the GPLv3.0 visit https://www.gnu.org/licenses/gpl-3.0.e
 	
 {}
 ```
-	""".format(VERSION_STRING))
+""".format(VERSION_STRING))
 
 @client.command(name="conditions", description="Display current ham band conditions", scope=GUILD_IDS)
 async def _conditions(ctx: interactions.CommandContext):
-  await ctx.send("{0}?id={1}".format(CONDITIONS_URL, random.randint(0, 9999999999)))
+	await ctx.send("{0}?id={1}".format(CONDITIONS_URL, random.randint(0, 9999999999)))
 
 @client.command(name="muf", description="Display current calculated Maximum Usable Frequency information", scope=GUILD_IDS)
 async def _muf(ctx: interactions.CommandContext):
-  await ctx.send("{0}?id={1}".format(MUF_URL, random.randint(0, 9999999999)))
+	await ctx.send("{0}?id={1}".format(MUF_URL, random.randint(0, 9999999999)))
 
 @client.command(name="bands", description="Display ARRL ham bands document", scope=GUILD_IDS)
 async def _bands(ctx: interactions.CommandContext):
-  await ctx.send("{0}".format(BANDS_URL))
+	await ctx.send("{0}".format(BANDS_URL))
 
 @client.command(name="ziptogrid", description="Convert a United States Zipcode to a Maidenhead gridsquare location",options=[
 				interactions.Option(
@@ -400,7 +456,7 @@ async def _bands(ctx: interactions.CommandContext):
 				required=True
 				)], scope=GUILD_IDS)
 async def _ziptogrid(ctx: interactions.CommandContext, zipcode: str):
-  await ctx.send(ziptogrid(zipcode))
+	await ctx.send(embeds=ziptogrid(zipcode))
 
 def main():
 	# Run the bot
