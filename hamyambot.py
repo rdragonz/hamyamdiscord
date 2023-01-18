@@ -79,7 +79,7 @@ async def _lookup(ctx: interactions.CommandContext, callsign: str):
 			required=True
 			)], scope=config_data.config["GUILD_IDS"])
 async def _distance(ctx: interactions.CommandContext, gridsquare1: str, gridsquare2: str):
-	await ctx.send(hamyam.distance.distance(gridsquare1, gridsquare2))
+	await ctx.send(embeds=hamyam.distance.distance(gridsquare1, gridsquare2, config_data))
 
 # /ping
 @client.command(name="ping", description="Display SlashCommand to Bot to API Latency. Used for debug purposes.", scope=config_data.config["GUILD_IDS"])
