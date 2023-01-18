@@ -12,351 +12,25 @@
 # Or visit https://www.gnu.org/licenses/gpl-3.0.en.html
 
 # ----- FOR CONFIGURATION INFORMATION, PLEASE REFERENCE THE README.md FILE -----
-# ----- BEGIN SECRETS AND KEYS FOR BOT -----
-QRZ_USERNAME = '' # Remove before flight
-QRZ_PASSWORD = '' # Remove before flight
-DISCORD_TOKEN = '' # Remove before flight
-GUILD_IDS = [] # Remove before flight
-# ----- END SECRETS AND KEYS FOR BOT -----
-
-# GLOBALS
-
-QRZ_URL = "https://xmldata.qrz.com/xml/current/"
-QRZ_PROFILE = "https://www.qrz.com/db/"
-DMRID_URL = "https://www.radioid.net/api/dmr/user"
-GRIDSQUARE_URL = "https://www.karhukoti.com/maidenhead-grid-square-locator/"
-CONDITIONS_URL = "http://www.hamqsl.com/solar101vhfpic.php"
-MUF_URL = "http://www.hamqsl.com/solarmuf.php"
-BANDS_URL = "https://i.imgur.com/j18VSeB.png"
-OSM_URL = "https://www.openstreetmap.org/"
-VERSION_STRING = "HAMYAMDiscord v3.00-BETA3 01/17/2023"
 
 import logging
-import requests
-import xmltodict
 import interactions
-import pycountry
 from uuid import uuid4
-import numpy as np
-import maidenhead as mh
-import json
 import random
-import zipcodes
-import hashlib
+
+import hamyam
 
 
 # Define global objects
+config_data = hamyam.config.Configuration("hamyam.conf")
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
-client = interactions.Client(token=DISCORD_TOKEN)
-
-def escapeChars(txt):
-	message = txt
-	temp = message.replace('-', '\-')
-	temp = temp.replace('.', '\.')
-	temp = temp.replace('#', '\#')
-	temp = temp.replace('(', '\(')
-	temp = temp.replace('=', '\=')
-	temp = temp.replace(')', '\)')
-	temp = temp.replace('+', '\+')
-	temp = temp.replace('!', '\!')
-	return temp
-
-def callsign_color(callsign):
-	# Takes a pre-validated callsign and converts it into a hex color code.
-	md5sum = hashlib.md5(callsign.encode("utf-8")).hexdigest()
-	colorcode = int(md5sum[:6], 16)
-	return colorcode
-
-def qrz_lookup(callsign):
-	url = '''{0}?username={1}&password={2}'''.format(QRZ_URL, QRZ_USERNAME, QRZ_PASSWORD)
-	session = requests.Session()
-	r = session.get(url)
-	raw_session = xmltodict.parse(r.content)
-	session_key = raw_session.get('QRZDatabase').get('Session').get('Key')
-
-	url2 = """{0}?s={1}&callsign={2}""".format(QRZ_URL, session_key, callsign)
-	r2 = session.get(url2)
-	raw = xmltodict.parse(r2.content).get('QRZDatabase')
-	ham = raw.get('Callsign')
-	return ham
-
-def lookup_call(callsign):
-	"""Add a job to the queue."""
-
-	if len(callsign) < 3 or len(callsign) >= 15:
-		return '__**{}**__\nThis callsign does not appear to be valid.'.format(callsign)
-
-	outs = qrz_lookup(str(callsign))
-
-	if not outs:
-		return '__**{}**__\nNo results found on QRZ.com'.format(callsign)
-	else:
-		message = str()
-
-		if 'country' in outs:
-			try:
-				country_emoji_search = pycountry.countries.search_fuzzy(outs['country'])
-
-				if country_emoji_search:
-					ces_first = country_emoji_search[0]
-					if hasattr(ces_first, 'alpha_2'):
-						ces_outs = (":flag_" + ces_first.alpha_2.lower() + ":")
-						message += ces_outs
-			except:
-				message += str(outs['country'])
-
-		if 'call' in outs:
-			message += '  __**{0}**__'.format(str(outs['call']))
-
-		message += '\n**Name:** '
-		if 'fname' in outs:
-			message += str(escapeChars(outs['fname']))
-		if 'name' in outs:
-			message += " " + str(escapeChars(outs['name']))
-
-		if 'aliases' in outs:
-			message += '\n**Aliases:** {0}'.format(str(outs['aliases']))
-
-		if 'trustee' in outs:
-			message += '\n**Trustee:** {0}'.format(str(outs['trustee']))
-
-		if 'class' in outs:
-			message += '\n**Class:** {0}'.format(str(outs['class']))
-
-		if 'addr2' in outs:
-			message += '\n**Location:** {0}'.format(str(escapeChars(outs['addr2'])))
-
-		if 'state' in outs:
-			message += ', {0}'.format(str(escapeChars(outs['state'])))
-
-		if 'country' in outs:
-			message += ', {0}'.format(str(escapeChars(outs['country'])))
-
-		if 'grid' in outs:
-			grid_code = str(outs['grid'][:4])
-			# https://aprs.fi/#!addr=EM89
-			message += ' \[[{0}]({1})\]'.format(grid_code, '{0}?grid='.format(GRIDSQUARE_URL) + str(grid_code))
-
-		if 'cqzone' in outs:
-			message += '\n**CQ Zone:** {0}'.format(str(outs['cqzone']))
-
-		if 'ituzone' in outs:
-			message += '\n**ITU Zone:** {0}'.format(str(outs['ituzone']))
-
-		if 'efdate' in outs and outs['efdate'] != '0000-00-00':
-			message += '\n**Granted:** {0}'.format(str(escapeChars(outs['efdate'])))
-
-		if 'expdate' in outs and outs['expdate'] != '0000-00-00':
-			message += '\n**Expiry:** {0}'.format(str(escapeChars(outs['expdate'])))
-
-		yes_var = ':white_check_mark:'
-		no_var = ':x:'
-
-		if 'lotw' in outs:
-			message += '\n**QSL via LoTW:** '
-			if outs['lotw'] == '1':
-				message += yes_var
-			else:
-				message += no_var
-
-		if 'eqsl' in outs:
-			message += '\n**QSL via eQSL:** '
-			if outs['eqsl'] == '1':
-				message += yes_var
-			else:
-				message += no_var
-
-		if 'mqsl' in outs:
-			message += '\n**QSL via Mail:** '
-			if outs['mqsl'] == '1':
-				message += yes_var
-			else:
-				message += no_var
-
-		if 'qslmgr' in outs:
-			message += '\n**QSL Manager:** {0}'.format(escapeChars(str(outs['qslmgr'])))
-
-
-		message += '\n[Profile on QRZ]({0}{1})'.format(QRZ_PROFILE, str(outs['call']).upper())
-
-		return message
-
-def distance(mh1, mh2):
-	'''
-	calculate the distance between two maidenhead locations
-	'''
-
-	error_mh = 'Please provide two valid Maidenhead locations.'
-
-	if len(mh1) < 4 or len(mh2) < 4 or len(mh1) > 6 or len(mh2) > 6 or not mh1[:2].isalpha() or not mh2[:2].isalpha():
-		return error_mh
-
-	mh1_gps = mh.to_location(mh1)
-	mh2_gps = mh.to_location(mh2)
-
-	answer = haversine_distance(mh1_gps[0], mh1_gps[1], mh2_gps[0], mh2_gps[1])
-	answer_miles = np.round(answer * 0.62137119224, 2)
-
-	outs = 'Distance is: {0} km ({1} mi)'.format(str(answer), str(answer_miles))
-	return outs
-
-def haversine_distance(lat1, lon1, lat2, lon2):
-	r = 6371
-	phi1 = np.radians(lat1)
-	phi2 = np.radians(lat2)
-	delta_phi = np.radians(lat2 - lat1)
-	delta_lambda = np.radians(lon2 - lon1)
-	a = np.sin(delta_phi / 2)**2 + np.cos(phi1) * np.cos(phi2) *   np.sin(delta_lambda / 2)**2
-	res = r * (2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a)))
-	return np.round(res, 2)
-
-def dmr_by_call(callsign):
-	message = interactions.Embed(
-		title="**__DMR ID Report__**",
-		description=callsign.upper(),
-		color=callsign_color(callsign.upper())
-	)
-
-	if len(callsign) < 3 or len(callsign) >= 15:
-		message.add_field("Error", "This callsign does not appear to be valid.")
-		return message	
-	url = '''{0}?callsign={1}'''.format(DMRID_URL, callsign)
-	session = requests.Session()
-	r = session.get(url)
-	
-	if not r:
-		message.add_field("Error", "This callsign is not associated with a DMR ID.")
-	else:
-		content = json.loads(r.content.decode("utf-8"))
-		if int(content["count"]) == 0:
-			message.add_field("Error", "This callsign is not associated with a DMR ID.")
-		else:
-			if int(content["count"]) > 1:
-				message.add_field("Note", "This callsign is associated with multiple DMR IDs")
-			ids = str()
-			count = content["count"]
-			for item in range(count):
-				ids += str(content["results"][item]["id"])
-				if item != (count-1):
-					ids += ", "
-			if int(content["count"]) > 1:
-				message.add_field("DMR IDs", ids)
-			else:
-				message.add_field("DMR ID", ids)
-			message.add_field("Name", content["results"][0]["fname"] + " " + content["results"][0]["surname"])
-			message.add_field("Country", content["results"][0]["country"])
-			loc = content["results"][0]["city"]
-			if content["results"][0]["state"] != "":
-				loc += ", " + content["results"][0]["state"]
-			message.add_field("Location", loc)
-
-	return message
-
-def call_by_dmrid(callsign):
-	
-
-	if len(callsign) != 7:
-		message = interactions.Embed(
-			title="**__DMR ID Report__**",
-			description=callsign.upper(),
-			color=16711680
-		)
-		message.add_field("Error", "This DMR ID does not appear to be valid.")
-		return message	
-	url = '''{0}?id={1}'''.format(DMRID_URL, callsign)
-	session = requests.Session()
-	r = session.get(url)
-
-
-	
-	if not r:
-		message = interactions.Embed(
-			title="**__DMR ID Report__**",
-			description=callsign.upper(),
-			color=16711680
-		)
-		message.add_field("Error", "This DMR ID is not associated with a callsign.")
-	else:
-		content = json.loads(r.content.decode("utf-8"))
-		if int(content["count"]) == 0:
-			message = interactions.Embed(
-				title="**__DMR ID Report__**",
-				description=callsign.upper(),
-				color=16711680
-			)
-			message.add_field("Error", "This DMR ID is not associated with a callsign.")
-		else:
-			message = interactions.Embed(
-				title="**__DMR ID Report__**",
-				description=callsign.upper(),
-				color=callsign_color(content["results"][0]["callsign"])
-			)
-			message.add_field("Callsign", content["results"][0]["callsign"])
-			if int(content["count"]) > 1:
-				message.add_field("Note", "This callsign is associated with multiple DMR IDs")
-			ids = str()
-			count = content["count"]
-			for item in range(count):
-				ids += str(content["results"][item]["id"])
-				if item != (count-1):
-					ids += ", "
-			if int(content["count"]) > 1:
-				message.add_field("DMR IDs", ids)
-			else:
-				message.add_field("DMR ID", ids)
-			message.add_field("Name", content["results"][0]["fname"] + " " + content["results"][0]["surname"])
-			message.add_field("Country", content["results"][0]["country"])
-			loc = content["results"][0]["city"]
-			if content["results"][0]["state"] != "":
-				loc += ", " + content["results"][0]["state"]
-			message.add_field("Location", loc)
-
-	return message
-
-def ziptogrid(zipcode):
-	# Quick validity check
-	message = interactions.Embed(
-		title="**__Zipcode to Gridsquare__**",
-		description=zipcode,
-		color=7368816
-	)
-	try:
-		int(zipcode)
-
-	except ValueError:
-		message.add_field("Error", "The entered Zipcode does not appear to be a valid United States Zipcode.")
-		return message
-
-	if len(zipcode) != 5:
-		message.add_field("Error", "The entered Zipcode does not appear to be a valid United States Zipcode.")
-		return message
-
-	try:
-		zipParsed = zipcodes.matching(zipcode)
-		if len(zipParsed) == 0:
-			message.add_field("Error", "The entered Zipcode was unable to be located. Is it a valid United States Zipcode?")
-			return message
-
-	except ValueError:
-		message.add_field("Error", "The entered Zipcode does not appear to be a valid United States Zipcode.")
-		return message
-	# Convert to Gridsquare
-	lat = float(zipParsed[0]['lat'])
-	lon = float(zipParsed[0]['long'])
-	state = zipParsed[0]['state']
-	city = zipParsed[0]['city']
-
-	gridsquare = mh.to_maiden(lat, lon)
-
-	message.add_field("Location", "{0}, {1} {2}".format(city, state, zipcode))
-	message.add_field("Gridsquare", "[{1}]({0}?grid={1})".format(GRIDSQUARE_URL, gridsquare))
-	message.add_field("Coordinates", "[{0}, {1}]({2}?mlat={0}&mlon={1}&zoom=12)".format(lat, lon, OSM_URL))
-
-	return message
+client = interactions.Client(token=config_data.config["DISCORD_TOKEN"])
 
 # Define commands
 
+# /dmridbycall
 @client.command(name="dmridbycall", description="Look up a DMR ID by callsign",
 	options=[
 		interactions.Option(
@@ -364,30 +38,33 @@ def ziptogrid(zipcode):
 			description="Callsign",
 			type=interactions.OptionType.STRING,
 			required=True,
-		),], scope=GUILD_IDS)
+		),], scope=config_data.config["GUILD_IDS"])
 async def _dmridbycall(ctx: interactions.CommandContext, callsign: str):
-	await ctx.send(embeds=dmr_by_call(callsign))
+	await ctx.send(embeds=hamyam.dmr_by_call.dmr_by_call(callsign, config_data))
 
+# /callbydmrid
 @client.command(name="callbydmrid", description="Look up a callsign by DMR ID",options=[
 			interactions.Option(
 			name="dmrid",
 			description="DMR ID",
 			type=interactions.OptionType.STRING,
 			required=True
-			)], scope=GUILD_IDS)
+			)], scope=config_data.config["GUILD_IDS"])
 async def _callbydmrid(ctx: interactions.CommandContext, dmrid: str):
-	await ctx.send(embeds=call_by_dmrid(dmrid))
+	await ctx.send(embeds=hamyam.call_by_dmrid.call_by_dmrid(dmrid, config_data))
 
+# /lookup
 @client.command(name="lookup", description="Look up a callsign on QRZ",options=[
 			interactions.Option(
 			name="callsign",
 			description="Callsign",
 			type=interactions.OptionType.STRING,
 			required=True
-			)], scope=GUILD_IDS)
+			)], scope=config_data.config["GUILD_IDS"])
 async def _lookup(ctx: interactions.CommandContext, callsign: str):
-	await ctx.send(lookup_call(callsign))
+	await ctx.send(hamyam.lookup_call.lookup_call(callsign, config_data))
 
+# /distance
 @client.command(name="distance", description="Calculate distance between two Maidenhead gridsquare locators",options=[
 			interactions.Option(
 			name="gridsquare1",
@@ -400,67 +77,51 @@ async def _lookup(ctx: interactions.CommandContext, callsign: str):
 			description="Gridsquare 2",
 			type=interactions.OptionType.STRING,
 			required=True
-			)], scope=GUILD_IDS)
+			)], scope=config_data.config["GUILD_IDS"])
 async def _distance(ctx: interactions.CommandContext, gridsquare1: str, gridsquare2: str):
-	await ctx.send(distance(gridsquare1, gridsquare2))
+	await ctx.send(hamyam.distance.distance(gridsquare1, gridsquare2))
 
-@client.command(name="ping", description="Display SlashCommand to Bot to API Latency. Used for debug purposes.", scope=GUILD_IDS)
+# /ping
+@client.command(name="ping", description="Display SlashCommand to Bot to API Latency. Used for debug purposes.", scope=config_data.config["GUILD_IDS"])
 async def _ping(ctx: interactions.CommandContext):
 	await ctx.send(f"Command to Bot to API Latency: ({client.latency*1000}ms)")
 
-@client.command(name="help", description="Display help and general bot information", scope=GUILD_IDS)
+# /help
+@client.command(name="help", description="Display help and general bot information", scope=config_data.config["GUILD_IDS"])
 async def _help(ctx: interactions.CommandContext):
-	await ctx.send("""```HELP FOR HAMYAM BOT:
-/lookup <CALLSIGN> - Look up a callsign on QRZ
-/conditions - Display current ham band conditions
-/distance <GRIDSQUARE 1> <GRIDSQUARE 2> - Calculate distance between two Maidenhead gridsquare locators
-/muf - Display current calculated Maximum Usable Frequency information
-/bands - Display ARRL ham bands document
-/dmridbycall <CALLSIGN> - Look up a DMR ID by callsign
-/callbydmrid <DMR ID> - Look up a callsign by DMR ID
-/ziptogrid <US Zipcode> - Obtain the Maidenhead gridsquare of a United States Zipcode.
-/help - Display this help document
-/ping - Display SlashCommand to Bot to API Latency. Used for debug purposes.
+	await ctx.send(hamyam.help.help(config_data))
 
-
-HAMYAM bot originally created for Telegram by V
-Ported to Discord by Red in 2021
-73 de KD2SSH
-
-https://github.com/rdragonz/hamyamdiscord
-
-This version of HAMYAM bot is licensed under the GNU General Public License v3.0
-For more information on the GPLv3.0 visit https://www.gnu.org/licenses/gpl-3.0.en.html
-	
-{}
-```
-""".format(VERSION_STRING))
-
-@client.command(name="conditions", description="Display current ham band conditions", scope=GUILD_IDS)
+# /conditions
+@client.command(name="conditions", description="Display current ham band conditions", scope=config_data.config["GUILD_IDS"])
 async def _conditions(ctx: interactions.CommandContext):
-	await ctx.send("{0}?id={1}".format(CONDITIONS_URL, random.randint(0, 9999999999)))
+	await ctx.send("{0}?id={1}".format(config_data.config["CONDITIONS_URL"], random.randint(0, 9999999999)))
 
-@client.command(name="muf", description="Display current calculated Maximum Usable Frequency information", scope=GUILD_IDS)
+# /muf
+@client.command(name="muf", description="Display current calculated Maximum Usable Frequency information", scope=config_data.config["GUILD_IDS"])
 async def _muf(ctx: interactions.CommandContext):
-	await ctx.send("{0}?id={1}".format(MUF_URL, random.randint(0, 9999999999)))
+	await ctx.send("{0}?id={1}".format(config_data.config["MUF_URL"], random.randint(0, 9999999999)))
 
-@client.command(name="bands", description="Display ARRL ham bands document", scope=GUILD_IDS)
+# /bands
+@client.command(name="bands", description="Display ARRL ham bands document", scope=config_data.config["GUILD_IDS"])
 async def _bands(ctx: interactions.CommandContext):
-	await ctx.send("{0}".format(BANDS_URL))
+	await ctx.send("{0}".format(config_data.config["BANDS_URL"]))
 
+# /ziptogrid
 @client.command(name="ziptogrid", description="Convert a United States Zipcode to a Maidenhead gridsquare location",options=[
 				interactions.Option(
 				name="zipcode",
 				description="United States Zip Code",
 				type=interactions.OptionType.STRING,
 				required=True
-				)], scope=GUILD_IDS)
+				)], scope=config_data.config["GUILD_IDS"])
 async def _ziptogrid(ctx: interactions.CommandContext, zipcode: str):
-	await ctx.send(embeds=ziptogrid(zipcode))
+	await ctx.send(embeds=hamyam.ziptogrid.ziptogrid(zipcode, config_data))
 
 def main():
 	# Run the bot
+	print(config_data.config["VERSION_STRING"])
 	client.start()
+
 
 if __name__ == '__main__':
 	main()

@@ -6,12 +6,12 @@ This bot requires a Discord API key, QRZ XML data access, and Python3.
 
 1. Install required python libraries from the requirements.txt file
 > python -m pip install -r requirements.txt
-2. Edit the hamyambot.py file to include your credentials for Discord and QRZ. See below for information on obtaining these credentials.
+2. Edit the hamyam.conf file to include your credentials for Discord and QRZ. This file is in JSON format. See below for information on obtaining these credentials.
 3. Run the bot
 > python hamyambot.py
 
 ## Configuration
-Information about the bot's configuration options is provided here. Values that are considered sensitive and not to be shared are tagged with "Remove before flight" for development reasons.
+Information about the bot's configuration options is provided here. This file is in JSON format, so you will need to take care to follow proper JSON formatting when adding your information. A JSON validation tool may help in ensuring that you are following the correct format.
 
 ### QRZ_USERNAME
 The username you would normally use to log in to QRZ. This will typically be your callsign or email address.
@@ -40,7 +40,7 @@ Follow the guide at https://discordpy.readthedocs.io/en/stable/discord.html for 
 Once you have configured these parameters, simply copy and paste the generated URL into your web browser to invite the bot to your server.
 
 ### Note on Guild IDs
-When editing the hamyambot.py file, there is a list for you to insert "guild IDs". These are needed, since new or modified Discord bots can take up to 24 hours to properly sync commands with a server after the bot is first invited. To obtain this ID, follow this guide: https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID- Adding this ID to your configuration will allow the bot to properly sync commands with your server in just a few moments.
+When editing the hamyam.conf file, there is a list for you to insert "guild IDs". These are needed, since new or modified Discord bots can take up to 24 hours to properly sync commands with a server after the bot is first invited. To obtain this ID, follow this guide: https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID- Adding this ID to your configuration will allow the bot to properly sync commands with your server in just a few moments.
 
 ## Usage
 Once the bot is running and added to a Discord server, you can then run commands to perform various functions. Run the "/help" command for a list of available commands, and their parameters, as well as to display other information about the bot. You can also type a single "/" to see a list of commands available to be run in your server.
