@@ -16,7 +16,6 @@
 import logging
 import interactions
 from uuid import uuid4
-import random
 
 import hamyam
 
@@ -84,7 +83,7 @@ async def _distance(ctx: interactions.CommandContext, gridsquare1: str, gridsqua
 # /ping
 @client.command(name="ping", description="Display SlashCommand to Bot to API Latency. Used for debug purposes.", scope=config_data.config["GUILD_IDS"])
 async def _ping(ctx: interactions.CommandContext):
-	await ctx.send(f"Command to Bot to API Latency: ({client.latency*1000}ms)")
+	await ctx.send(f"Command to Bot to API Latency: ({int(client.latency)}ms)")
 
 # /help
 @client.command(name="help", description="Display help and general bot information", scope=config_data.config["GUILD_IDS"])
@@ -94,7 +93,7 @@ async def _help(ctx: interactions.CommandContext):
 # /conditions
 @client.command(name="conditions", description="Display current ham band conditions", scope=config_data.config["GUILD_IDS"])
 async def _conditions(ctx: interactions.CommandContext):
-	await ctx.send("{0}?id={1}".format(config_data.config["CONDITIONS_URL"], random.randint(0, 9999999999)))
+	await ctx.send(embeds=hamyam.conditions.conditions(config_data))
 
 # /muf
 @client.command(name="muf", description="Display current calculated Maximum Usable Frequency information", scope=config_data.config["GUILD_IDS"])
@@ -104,7 +103,7 @@ async def _muf(ctx: interactions.CommandContext):
 # /bands
 @client.command(name="bands", description="Display ARRL ham bands document", scope=config_data.config["GUILD_IDS"])
 async def _bands(ctx: interactions.CommandContext):
-	await ctx.send("{0}".format(config_data.config["BANDS_URL"]))
+	await ctx.send(embeds=hamyam.bands.bands(config_data))
 
 # /ziptogrid
 @client.command(name="ziptogrid", description="Convert a United States Zipcode to a Maidenhead gridsquare location",options=[

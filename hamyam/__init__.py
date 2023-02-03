@@ -1,5 +1,7 @@
+import hamyam.bands
 import hamyam.call_by_dmrid
 import hamyam.callsign_color
+import hamyam.conditions
 import hamyam.config
 import hamyam.distance
 import hamyam.dmr_by_call
