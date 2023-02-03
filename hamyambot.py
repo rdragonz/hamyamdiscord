@@ -15,7 +15,6 @@
 
 import logging
 import interactions
-from uuid import uuid4
 
 import hamyam
 
@@ -98,7 +97,7 @@ async def _conditions(ctx: interactions.CommandContext):
 # /muf
 @client.command(name="muf", description="Display current calculated Maximum Usable Frequency information", scope=config_data.config["GUILD_IDS"])
 async def _muf(ctx: interactions.CommandContext):
-	await ctx.send("{0}?id={1}".format(config_data.config["MUF_URL"], random.randint(0, 9999999999)))
+	await ctx.send(embeds=hamyam.muf.muf(config_data))
 
 # /bands
 @client.command(name="bands", description="Display ARRL ham bands document", scope=config_data.config["GUILD_IDS"])
