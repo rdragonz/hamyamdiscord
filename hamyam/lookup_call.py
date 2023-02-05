@@ -1,12 +1,21 @@
+import interactions
 import pycountry
 import hamyam.qrz_lookup
 import hamyam.escapeChars
 
 def lookup_call(callsign, config):
-	"""Add a job to the queue."""
+	# Look up a callsign on QRZ and generate a report
+	# Takes: Callsign
+	# Returns: Interactions.py embed format
+
+	message = interactions.Embed(
+		title="**__{0}__**".format(callsign.upper()),
+		color=hamyam.callsign_color.callsign_color(callsign.upper())
+	)
 
 	if len(callsign) < 3 or len(callsign) >= 15:
-		return '__**{}**__\nThis callsign does not appear to be valid.'.format(callsign)
+		message.add_field("Error", "This callsign does not appear to be valid.")
+		return message
 
 	outs = hamyam.qrz_lookup.qrz_lookup(str(callsign), config)
 
