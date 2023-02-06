@@ -10,7 +10,7 @@ def ziptogrid(zipcode, config):
 	message = interactions.Embed(
 		title="**__Zipcode to Gridsquare__**",
 		description=zipcode,
-		color=16711680
+		color=7368816
 	)
 	if len(zipcode) > 250:
 		message = interactions.Embed(
