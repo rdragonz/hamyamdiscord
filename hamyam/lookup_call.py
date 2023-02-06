@@ -43,7 +43,7 @@ def lookup_call(callsign, config):
 		if 'name' in outs:
 			name += " " + str(hamyam.escapeChars.escapeChars(outs['name']))
 
-		message.add_field("Name", name)
+		message.add_field("", "**{0}**".format(name))
 
 		# Aliases/Trustee/Class
 		if 'aliases' in outs:
