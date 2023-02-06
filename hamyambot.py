@@ -60,7 +60,7 @@ async def _callbydmrid(ctx: interactions.CommandContext, dmrid: str):
 			required=True
 			)], scope=config_data.config["GUILD_IDS"])
 async def _lookup(ctx: interactions.CommandContext, callsign: str):
-	await ctx.send(hamyam.lookup_call.lookup_call(callsign, config_data))
+	await ctx.send(embeds=hamyam.lookup_call.lookup_call(callsign, config_data))
 
 # /distance
 @client.command(name="distance", description="Calculate distance between two Maidenhead gridsquare locators",options=[
