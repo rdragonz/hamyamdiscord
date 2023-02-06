@@ -14,6 +14,14 @@ def lookup_call(callsign, config):
 	)
 
 	# Quick validity check
+	if len(callsign) > 250:
+		message = interactions.Embed(
+			title="**__SERIOUS ERROR__**",
+			color=16711680
+		)
+		message.add_field("Error", "A serious error has occured. Please submit this as a bug to the [Github Issues Page]({}).".format(config.config["GITHUB_ISSUES_URL"]))
+		return message
+
 	if len(callsign) < 3 or len(callsign) >= 15:
 		message.add_field("Error", "This callsign does not appear to be valid.")
 		return message

@@ -10,8 +10,15 @@ def ziptogrid(zipcode, config):
 	message = interactions.Embed(
 		title="**__Zipcode to Gridsquare__**",
 		description=zipcode,
-		color=7368816
+		color=16711680
 	)
+	if len(zipcode) > 250:
+		message = interactions.Embed(
+			title="**__SERIOUS ERROR__**",
+			color=16711680
+		)
+		message.add_field("Error", "A serious error has occured. Please submit this as a bug to the [Github Issues Page]({}).".format(config.config["GITHUB_ISSUES_URL"]))
+		return message
 
 	# Quick validity checks
 	try:
