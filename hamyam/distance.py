@@ -13,6 +13,14 @@ def distance(mh1, mh2, config):
 			color=7368816
 		)
 
+	if not mh1.isalnum() or not mh2.isalnum():
+		message = interactions.Embed(
+			title="**__INPUT ERROR__**",
+			color=16711680
+		)
+		message.add_field("Error", "An error was encountered with your input. Please run `/help` for more information on command usage.")
+		return message
+
 	# Quick validity check
 	if len(mh1) < 4 or len(mh2) < 4 or len(mh1) > 6 or len(mh2) > 6 or not mh1[:2].isalpha() or not mh2[:2].isalpha():
 		message.add_field("Error", "Please provide two valid Maidenhead locations.")

@@ -2,6 +2,7 @@ import interactions
 import requests
 import json
 import hamyam.callsign_color
+import hamyam.escapeChars
 
 def call_by_dmrid(callsign, config):
 	# Obtain callsign from DMR ID
@@ -9,6 +10,16 @@ def call_by_dmrid(callsign, config):
 	# Returns: Interactions embed format containing callsign report
 
 	# Quick validity check and error message
+	callsign = hamyam.escapeChars.escapeChars(callsign)
+
+	if not callsign.isalnum():
+		message = interactions.Embed(
+			title="**__INPUT ERROR__**",
+			color=16711680
+		)
+		message.add_field("Error", "An error was encountered with your input. Please run `/help` for more information on command usage.")
+		return message
+
 	if len(callsign) != 7:
 		message = interactions.Embed(
 			title="**__DMR ID Report__**",

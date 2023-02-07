@@ -12,4 +12,7 @@ def escapeChars(txt):
 	temp = temp.replace(')', '\)')
 	temp = temp.replace('+', '\+')
 	temp = temp.replace('!', '\!')
+	temp = temp.replace('_', '\_')
+	temp = temp.replace('{', '\{')
+	temp = temp.replace('}', '\}')
 	return temp

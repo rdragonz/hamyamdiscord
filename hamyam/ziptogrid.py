@@ -14,13 +14,20 @@ def ziptogrid(zipcode, config):
 	)
 	if len(zipcode) > 250:
 		message = interactions.Embed(
-			title="**__SERIOUS ERROR__**",
+			title="**__INPUT ERROR__**",
 			color=16711680
 		)
-		message.add_field("Error", "A serious error has occured. Please submit this as a bug to the [Github Issues Page]({}).".format(config.config["GITHUB_ISSUES_URL"]))
+		message.add_field("Error", "An error was encountered with your input. Please run `/help` for more information on command usage.")
 		return message
 
 	# Quick validity checks
+	if not zipcode.isalnum():
+		message = interactions.Embed(
+			title="**__SERIOUS ERROR__**",
+			color=16711680
+		)
+		message.add_field("Error", "A serious error has occured.")
+		return message
 	try:
 		int(zipcode) # Make sure the entered Zipcode is only digits
 	except ValueError:

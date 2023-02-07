@@ -8,18 +8,31 @@ def lookup_call(callsign, config):
 	# Takes: Callsign
 	# Returns: Interactions.py embed format
 
+	# Re-validate the callsign
+	callsign = hamyam.escapeChars.escapeChars(callsign)
+
 	message = interactions.Embed(
 		title="**__{0}__**".format(callsign.upper()),
 		color=hamyam.callsign_color.callsign_color(callsign.upper())
 	)
 
 	# Quick validity check
-	if len(callsign) > 250:
+
+	if not callsign.isalnum():
 		message = interactions.Embed(
-			title="**__SERIOUS ERROR__**",
+			title="**__INPUT ERROR__**",
 			color=16711680
 		)
-		message.add_field("Error", "A serious error has occured. Please submit this as a bug to the [Github Issues Page]({}).".format(config.config["GITHUB_ISSUES_URL"]))
+		message.add_field("Error", "An error was encountered with your input. Please run `/help` for more information on command usage.")
+		return message
+
+
+	if len(callsign) > 250:
+		message = interactions.Embed(
+			title="**__INPUT ERROR__**",
+			color=16711680
+		)
+		message.add_field("Error", "An error was encountered with your input. Please run `/help` for more information on command usage.")
 		return message
 
 	if len(callsign) < 3 or len(callsign) >= 15:
