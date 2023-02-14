@@ -1,0 +1,21 @@
+HELP FOR HAMYAM BOT:
+/lookup <CALLSIGN> - Look up a callsign on QRZ
+/conditions - Display current ham band conditions
+/distance <GRIDSQUARE 1> <GRIDSQUARE 2> - Calculate distance between two Maidenhead gridsquare locators
+/muf - Display current calculated Maximum Usable Frequency information
+/bands - Display ARRL ham bands document
+/dmridbycall <CALLSIGN> - Look up a DMR ID by callsign
+/callbydmrid <DMR ID> - Look up a callsign by DMR ID
+/ziptogrid <US Zipcode> - Obtain the Maidenhead gridsquare of a United States Zipcode.
+/help - Display this help document
+/ping - Display SlashCommand to Bot to API Latency. Used for debug purposes.
+
+
+HAMYAM bot originally created for Telegram by V
+Ported to Discord by Red in 2021
+73 de KD2SSH
+
+https://github.com/rdragonz/hamyamdiscord
+
+This version of HAMYAM bot is licensed under the GNU General Public License v3.0
+For more information on the GPLv3.0 visit https://www.gnu.org/licenses/gpl-3.0.en.html
