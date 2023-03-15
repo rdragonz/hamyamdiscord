@@ -131,4 +131,10 @@ def lookup_call(callsign, config):
 		# Links
 		message.add_field("Links", "[Profile on QRZ]({0}{1})".format(config.config["QRZ_PROFILE"], str(outs['call']).upper()))
 
+		# Easter Egg for looking up K2GXT or KD2SSH!
+		if callsign == "KD2SSH":
+			message.add_field("Note", "Hey there, thanks for looking me up! I helped work on this Discord bot, but a lot of credit goes to the original Author, V, who created this bot for Telegram and wrote a lot of the code. Unfortunately She doesn't really have that big of an online presence. Now, get out there and do some radio!")
+		if callsign == "K2GXT":
+			message.add_field("Note", "Horrible. Terrible, even.")
+			
 		return message
