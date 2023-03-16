@@ -1,15 +1,31 @@
 HELP FOR HAMYAM BOT:
+
 /lookup <CALLSIGN> - Look up a callsign on QRZ
+
+Band Conditions:
 /conditions - Display current ham band conditions
-/distance <GRIDSQUARE 1> <GRIDSQUARE 2> - Calculate distance between two Maidenhead gridsquare locators
 /muf - Display current calculated Maximum Usable Frequency information
+
+Static Information:
 /bands - Display ARRL ham bands document
+
+DMR:
 /dmridbycall <CALLSIGN> - Look up a DMR ID by callsign
 /callbydmrid <DMR ID> - Look up a callsign by DMR ID
-/ziptogrid <US Zipcode> - Obtain the Maidenhead gridsquare of a United States Zipcode.
+
+APRS:
+/aprs <CALLSIGN> - Get the most recent APRS packet for the given callsign
+/aprshistory <CALLSIGN> - Get the raw APRS data for the 10 most recent packets for the given callsign
+/wx <ZIPCODE> - Get the latest weather information for a station in or near the given zipcode
+/ais <VESSEL NAME> - Get the most recent AIS packet for the specified vessel
+
+Utilities:
+/distance <GRIDSQUARE 1> <GRIDSQUARE 2> - Calculate distance between two Maidenhead gridsquare locators
+/ziptogrid <US Zipcode> - Obtain the Maidenhead gridsquare of a United States Zipcode
+
+Internal Commands:
 /help - Display this help document
 /ping - Display SlashCommand to Bot to API Latency. Used for debug purposes.
-
 
 HAMYAM bot originally created for Telegram by V
 Ported to Discord by Red in 2021
