@@ -92,7 +92,7 @@ async def _help(ctx: interactions.CommandContext):
 # /conditions
 @client.command(name="conditions", description="Display current ham band conditions", scope=config_data.config["GUILD_IDS"])
 async def _conditions(ctx: interactions.CommandContext):
-	await ctx.send(content=ctx.config["CONDITIONS_URL"], files=[hamyam.conditions.conditions(config_data)])
+	await ctx.send(content=config_data.config["CONDITIONS_URL"], files=[hamyam.conditions.conditions(config_data)])
 
 # /muf
 @client.command(name="muf", description="Display current calculated Maximum Usable Frequency information", scope=config_data.config["GUILD_IDS"])
