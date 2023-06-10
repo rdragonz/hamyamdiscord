@@ -1,42 +1,18 @@
-import interactions
-import requests
-import base64
-import json
+import interactions, base64, re, requests
+from io import BytesIO
 
 def conditions(config):
 	# Return ham band conditions
 	# Takes: None
-	# Returns: interactions.py embed format
+	# Returns: interactions.py Image class object, ready to be sent via ctx.send
 
 	# Get current band conditions and convert it to base64
 	image = requests.get(config.config["CONDITIONS_URL"])
 	image_b64 = base64.b64encode(image.content)
+	# Now decode it from base64 to a BaseIO byte stream
+	image_bio = BytesIO(base64.b64decode(re.sub("data:image/jpeg;base64", '', image_b64)))
+	# And provide that byte stream to the interactions library
+	image_int = interactions.Image("conditions.gif", image_bio)
 
-	# Upload to Imgur
-	headers = {
-		'Authorization': 'Client-ID {0}'.format(config.config["IMGUR_CLIENT_ID"])
-	}
-	payload={
-		'image': image_b64
-	}
-	imgur_response = requests.request("POST", config.config["IMGUR_UPLOAD_URL"], headers=headers, data=payload)
-
-	# Get underlying URL back from Imgur
-	data = json.loads(imgur_response.text)
-	url = data["data"]["link"]
-
-	message = interactions.Embed(
-		title="**__Current Band Conditions__**",
-		color=7368816,
-		image=interactions.EmbedImageStruct(
-			url=url,
-			height=148,
-			width=460,
-		),
-		fields=[interactions.EmbedField(
-			name="",
-			value="[Source]({0})".format(config.config["CONDITIONS_SOURCE_URL"])
-		)]
-	)
-
-	return message
+	# Return the image to the caller
+	return images_int
