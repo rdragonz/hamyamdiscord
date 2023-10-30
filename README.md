@@ -4,11 +4,19 @@ HamYam bot ported to Discord
 ## Installation
 This bot requires a Discord API key, QRZ XML data access, an Imgur Client ID, and Python3.
 
+0. Clone the repository into a file on your machine
+> git clone https://github.com/rdragonz/hamyamdiscord.git
 1. Install required python libraries from the requirements.txt file
 > python -m pip install -r requirements.txt
 2. Edit the hamyam.conf file to include your credentials for Discord and QRZ. This file is in JSON format. See below for information on obtaining these credentials.
 3. Run the bot
 > python hamyambot.py
+4. **OPTIONAL:** Set Hamyambot to run as a systemd service on boot
+Edit the included ``hamyambot.service`` file to contain a path to your python3 executable and the downloaded copy of hamyambot. Then:
+> cp hamyambot.service /etc/systemd/system/hamyambot.service
+> service enable hamyambot
+> service start hamyambot
+
 
 ## Configuration
 Information about the bot's configuration options is provided here. This file is in JSON format, so you will need to take care to follow proper JSON formatting when adding your information. A JSON validation tool may help in ensuring that you are following the correct format.
@@ -28,6 +36,10 @@ The Discord bot token, explained further below.
 ### GUILD_IDS
 The Server IDs in list format for all of the servers that the bot is a part of. Instructions on how to obtain server IDs are listed below.
 
+### LANG
+
+Hamyambot is available in several languages. For a list of supported languages, please check strings/README.md. This value should be set to one of the supported languages listed. By default, this is set to "en_US". If you would like to translate Hamyambot into a language you're familiar with, please check strings/translating.md and submit a Pull request with the changes!
+
 ### Global variables
 The bot uses several global variables to define the URLs used for various lookups and embeds. These are contained within several global variables, and should not be modified unless you know exactly what you are doing. Changes to these values may result in unexpected behavior!
 
@@ -35,7 +47,7 @@ The bot uses several global variables to define the URLs used for various lookup
 This guide assumes that you have at least some familiarity with how bots are created from within the Discord developer portal, however some basic information about the correct permissions and inviting the bot to your server are provided here. 
 
 ### Build-a-bot
-Follow the guide at https://discordpy.readthedocs.io/en/stable/discord.html for creating a Discord bot and inviting it to your server. The bot will need to be running and have the proper keys and credentials inserted into the hamyambot.py file before you can invite it to your server. When generating the OAUTH2 invitation URL, you will need to ensure that the following permissions are enabled for the bot to function properly:
+Follow the guide at https://discordpy.readthedocs.io/en/stable/discord.html for creating a Discord bot and inviting it to your server. The bot will need to be running and have the proper keys and credentials inserted into the hamyam.conf file before you can invite it to your server. When generating the OAUTH2 invitation URL, you will need to ensure that the following permissions are enabled for the bot to function properly:
 ![](https://i.imgur.com/MYkd0pB.png)
 ![](https://i.imgur.com/5FSwjTT.png)
 

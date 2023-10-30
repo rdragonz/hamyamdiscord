@@ -1,0 +1,14 @@
+[Unit]
+Description=HamYam Discord Bot
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=ruser
+ExecStart=<fullpath_to_python3_executable> <fullpath_to_hamyambot.py>
+
+[Install]
+WantedBy=multi-user.target
