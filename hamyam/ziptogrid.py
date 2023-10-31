@@ -8,34 +8,34 @@ def ziptogrid(zipcode, config):
 	# Returns: interactions Embed object
 
 	message = interactions.Embed(
-		title="**__Zipcode to Gridsquare__**",
+		title="**__{0}__**".format(config.lang["ZIPTOGRID"]),
 		description=zipcode,
 		color=7368816
 	)
 	if len(zipcode) > 250:
 		message = interactions.Embed(
-			title="**__INPUT ERROR__**",
+			title="**__{0}__**".format(config.lang["INPUT_ERORR"]),
 			color=16711680
 		)
-		message.add_field("Error", "An error was encountered with your input. Please run `/help` for more information on command usage.")
+		message.add_field(config.lang["ERROR"], config.lang["INPUT_ERROR_LONG"])
 		return message
 
 	# Quick validity checks
 	if not zipcode.isalnum():
 		message = interactions.Embed(
-			title="**__SERIOUS ERROR__**",
+			title="**__{0}__**".format(config.lang["ERROR_SERIOUS"]),
 			color=16711680
 		)
-		message.add_field("Error", "A serious error has occured.")
+		message.add_field(config.lang["ERROR"], config.lang["ERROR_SERIOUS_LONG"])
 		return message
 	try:
 		int(zipcode) # Make sure the entered Zipcode is only digits
 	except ValueError:
-		message.add_field("Error", "The entered Zipcode does not appear to be a valid United States Zipcode.")
+		message.add_field(config.lang["ERROR"], config.lang["ZIPCODE_INVALID"])
 		return message
 	if len(zipcode) != 5:
 		# Length check, all US Zipcodes are 5 digits
-		message.add_field("Error", "The entered Zipcode does not appear to be a valid United States Zipcode.")
+		message.add_field(config.lang["ERROR"], config.lang["ZIPCODE_INVALID"])
 		return message
 
 	try:
@@ -43,11 +43,11 @@ def ziptogrid(zipcode, config):
 		zipParsed = zipcodes.matching(zipcode)
 		if len(zipParsed) == 0:
 			# If no zipcode is found, it's probably invalid.
-			message.add_field("Error", "The entered Zipcode was unable to be located. Is it a valid United States Zipcode?")
+			message.add_field(config.lang["ERROR"], config.lang["ZIPCODE_UNLOCATEABLE"])
 			return message
 	# Another validity check incase all others failed
 	except ValueError:
-		message.add_field("Error", "The entered Zipcode does not appear to be a valid United States Zipcode.")
+		message.add_field(config.lang["ERROR"], config.lang["ZIPCODE_INVALID"])
 		return message
 	# Convert to Gridsquare
 	lat = float(zipParsed[0]['lat'])
@@ -57,8 +57,8 @@ def ziptogrid(zipcode, config):
 	# Convert lat/long to gridsquare
 	gridsquare = mh.to_maiden(lat, lon)
 	# Create properly formatted interactions embed
-	message.add_field("Location", "{0}, {1} {2}".format(city, state, zipcode))
-	message.add_field("Gridsquare", "[{1}]({0}?grid={1})".format(config.config["GRIDSQUARE_URL"], gridsquare))
-	message.add_field("Coordinates", "[{0}, {1}]({2}?mlat={0}&mlon={1}&zoom=12)".format(lat, lon, config.config["OSM_URL"]))
+	message.add_field(config.lang["LOCATION"], "{0}, {1} {2}".format(city, state, zipcode))
+	message.add_field(config.lang["GRIDSQUARE"], "[{1}]({0}?grid={1})".format(config.config["GRIDSQUARE_URL"], gridsquare))
+	message.add_field(config.lang["COORDINATES"], "[{0}, {1}]({2}?mlat={0}&mlon={1}&zoom=12)".format(lat, lon, config.config["OSM_URL"]))
 
 	return message

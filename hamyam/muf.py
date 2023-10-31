@@ -1,7 +1,9 @@
 import interactions
 import requests
 import base64
-import json
+import re
+
+from io import BytesIO
 
 def muf(config):
 	# Return maximum usable frequency information
@@ -12,30 +14,20 @@ def muf(config):
 	image = requests.get(config.config["MUF_URL"])
 	image_b64 = base64.b64encode(image.content)
 
-	# Upload to Imgur
-	headers = {
-		'Authorization': 'Client-ID {0}'.format(config.config["IMGUR_CLIENT_ID"])
-	}
-	payload={
-		'image': image_b64
-	}
-	imgur_response = requests.request("POST", config.config["IMGUR_UPLOAD_URL"], headers=headers, data=payload)
+	print(image_b64)
 
-	# Get underlying URL back from Imgur
-	data = json.loads(imgur_response.text)
-	url = data["data"]["link"]
+	# Now decode it from base64 to a BaseIO byte stream
+	image_bio = BytesIO(base64.b64decode(re.sub("data:image/jpeg;base64", '', image_b64)))
+	# And provide that byte stream to the interactions library
+	image_int = interactions.Image("muf.gif", image_bio)
 
 	message = interactions.Embed(
-		title="**__Current Maximum Usable Frequency Information__**",
+		title="**__{0}__**".format(config.lang["MUF"]),
 		color=7368816,
-		image=interactions.EmbedImageStruct(
-			url=url,
-			height=400,
-			width=200,
-		),
+		image=image_int,
 		fields=[interactions.EmbedField(
 			name="",
-			value="[Source]({0})".format(config.config["CONDITIONS_SOURCE_URL"])
+			value="[{0}]({1})".format(config.lang["SOURCE"], config.config["CONDITIONS_SOURCE_URL"])
 		)]
 	)
 

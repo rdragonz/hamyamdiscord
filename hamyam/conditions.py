@@ -1,7 +1,9 @@
 import interactions
 import requests
 import base64
-import json
+import re
+
+from io import BytesIO
 
 def conditions(config):
 	# Return ham band conditions
@@ -9,33 +11,25 @@ def conditions(config):
 	# Returns: interactions.py embed format
 
 	# Get current band conditions and convert it to base64
+	# SPECIALTHANKS: 
 	image = requests.get(config.config["CONDITIONS_URL"])
-	image_b64 = base64.b64encode(image.content)
+	# Coinvert
+	image_b64 = base64.b64encode(image.content).decode("UTF-8")
 
-	# Upload to Imgur
-	headers = {
-		'Authorization': 'Client-ID {0}'.format(config.config["IMGUR_CLIENT_ID"])
-	}
-	payload={
-		'image': image_b64
-	}
-	imgur_response = requests.request("POST", config.config["IMGUR_UPLOAD_URL"], headers=headers, data=payload)
+	image_b64 = re.sub("data:image/jpeg;base64", '', image_b64)
 
-	# Get underlying URL back from Imgur
-	data = json.loads(imgur_response.text)
-	url = data["data"]["link"]
+	# Now decode it from base64 to a BaseIO byte stream
+	image_bio = BytesIO(base64.b64decode(image_b64).read())
+	# And provide that byte stream to the interactions library
+	image_int = interactions.Image("conditions.gif", image_bio)
 
 	message = interactions.Embed(
-		title="**__Current Band Conditions__**",
+		title="**__{0}__**".format(config.lang["BAND_CONDITIONS"]),
 		color=7368816,
-		image=interactions.EmbedImageStruct(
-			url=url,
-			height=148,
-			width=460,
-		),
+		image=image_int,
 		fields=[interactions.EmbedField(
 			name="",
-			value="[Source]({0})".format(config.config["CONDITIONS_SOURCE_URL"])
+			value="[{0}]({1})".format(config.lang["SOURCE"], config.config["CONDITIONS_SOURCE_URL"])
 		)]
 	)
 

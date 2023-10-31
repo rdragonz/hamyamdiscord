@@ -7,7 +7,7 @@ def bands(config):
 
 	# Set up and return an embed containing the bands document
 	message = interactions.Embed(
-		title="**__US Ham Radio Bands__**",
+		title="**__{0}__**".format(config.lang["US_BANDS"]),
 		color=7368816,
 		image=interactions.EmbedImageStruct(
 			url=config.config["BANDS_URL"],
@@ -16,7 +16,7 @@ def bands(config):
 		),
 		fields=[interactions.EmbedField(
 			name="",
-			value="[Download PDF]({0})".format(config.config["BANDS_PDF_URL"])
+			value="[{0}]({1})".format(config.lang["PDF_DOWNLOAD"], config.config["BANDS_PDF_URL"])
 		)]
 	)
 

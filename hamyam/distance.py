@@ -9,21 +9,21 @@ def distance(mh1, mh2, config):
 	# Returns: interactions Embed object
 
 	message = interactions.Embed(
-			title="**__Distance__**",
+			title="**__{0}__**".format(config.lang["DISTANCE"]),
 			color=7368816
 		)
 
 	if not mh1.isalnum() or not mh2.isalnum():
 		message = interactions.Embed(
-			title="**__INPUT ERROR__**",
+			title="**__{0}__**".format(config.lang["INPUT_ERROR"]),
 			color=16711680
 		)
-		message.add_field("Error", "An error was encountered with your input. Please run `/help` for more information on command usage.")
+		message.add_field(config.lang["ERROR"], config.lang["INPUT_ERROR_LONG"])
 		return message
 
 	# Quick validity check
 	if len(mh1) < 4 or len(mh2) < 4 or len(mh1) > 6 or len(mh2) > 6 or not mh1[:2].isalpha() or not mh2[:2].isalpha():
-		message.add_field("Error", "Please provide two valid Maidenhead locations.")
+		message.add_field(config.lang["ERROR"], config.lang["ERROR_MAIDENHEAD"])
 		return message
 	else:
 		# Check for and stylize 6-digit Maidenhead gridsquares
@@ -37,8 +37,8 @@ def distance(mh1, mh2, config):
 		else:
 			mh2_styled = mh2[:2].upper() + mh2[2:].lower()
 
-		message.add_field("Position 1", "[{1}]({0}?grid={1})".format(config.config["GRIDSQUARE_URL"], mh1_styled), inline=True)
-		message.add_field("Position 2", "[{1}]({0}?grid={1})".format(config.config["GRIDSQUARE_URL"], mh2_styled), inline=True)
+		message.add_field(config.lang["POS1"], "[{1}]({0}?grid={1})".format(config.config["GRIDSQUARE_URL"], mh1_styled), inline=True)
+		message.add_field(config.lang["POS2"], "[{1}]({0}?grid={1})".format(config.config["GRIDSQUARE_URL"], mh2_styled), inline=True)
 
 	# Convert input maidenhead values to coordinates
 	mh1_gps = mh.to_location(mh1)
@@ -48,7 +48,7 @@ def distance(mh1, mh2, config):
 	answer = haversine_distance(mh1_gps[0], mh1_gps[1], mh2_gps[0], mh2_gps[1])
 	answer_miles = np.round(answer * 0.62137119224, 2)
 
-	message.add_field("Distance", "{0} km ({1} mi)".format(str(answer), str(answer_miles)))
+	message.add_field(config.lang["DISTANCE"], "{0} km ({1} mi)".format(str(answer), str(answer_miles)))
 
 	return message
 

@@ -29,11 +29,11 @@ client = interactions.Client(token=config_data.config["DISCORD_TOKEN"])
 # Define commands
 
 # /dmridbycall
-@client.command(name="dmridbycall", description="Look up a DMR ID by callsign",
+@client.command(name="dmridbycall", description=config_data.lang["DESCRIPTION_DMRIDBYCALL"],
 	options=[
 		interactions.Option(
 			name="callsign",
-			description="Callsign",
+			description=config_data.lang["CALLSIGN"],
 			type=interactions.OptionType.STRING,
 			required=True,
 		),], scope=config_data.config["GUILD_IDS"])
@@ -41,10 +41,10 @@ async def _dmridbycall(ctx: interactions.CommandContext, callsign: str):
 	await ctx.send(embeds=hamyam.dmr_by_call.dmr_by_call(callsign, config_data))
 
 # /callbydmrid
-@client.command(name="callbydmrid", description="Look up a callsign by DMR ID",options=[
+@client.command(name="callbydmrid", description=config_data.lang["DESCRIPTION_CALLBYDMRID"],options=[
 			interactions.Option(
 			name="dmrid",
-			description="DMR ID",
+			description=config_data.lang["DMR_ID"],
 			type=interactions.OptionType.STRING,
 			required=True
 			)], scope=config_data.config["GUILD_IDS"])
@@ -52,10 +52,10 @@ async def _callbydmrid(ctx: interactions.CommandContext, dmrid: str):
 	await ctx.send(embeds=hamyam.call_by_dmrid.call_by_dmrid(dmrid, config_data))
 
 # /lookup
-@client.command(name="lookup", description="Look up a callsign on QRZ",options=[
+@client.command(name="lookup", description=config_data.lang["DESCRIPTION_LOOKUP"],options=[
 			interactions.Option(
 			name="callsign",
-			description="Callsign",
+			description=config_data.lang["CALLSIGN"],
 			type=interactions.OptionType.STRING,
 			required=True
 			)], scope=config_data.config["GUILD_IDS"])
@@ -63,16 +63,16 @@ async def _lookup(ctx: interactions.CommandContext, callsign: str):
 	await ctx.send(embeds=hamyam.lookup_call.lookup_call(callsign, config_data))
 
 # /distance
-@client.command(name="distance", description="Calculate distance between two Maidenhead gridsquare locators",options=[
+@client.command(name="distance", description=config_data.lang["DESCRIPTION_DISTANCE"],options=[
 			interactions.Option(
 			name="gridsquare1",
-			description="Gridsquare 1",
+			description=config_data.lang["GRIDSQUARE1"],
 			type=interactions.OptionType.STRING,
 			required=True
 			),
 			interactions.Option(
 			name="gridsquare2",
-			description="Gridsquare 2",
+			description=config_data.lang["GRIDSQUARE2"],
 			type=interactions.OptionType.STRING,
 			required=True
 			)], scope=config_data.config["GUILD_IDS"])
@@ -80,35 +80,35 @@ async def _distance(ctx: interactions.CommandContext, gridsquare1: str, gridsqua
 	await ctx.send(embeds=hamyam.distance.distance(gridsquare1, gridsquare2, config_data))
 
 # /ping
-@client.command(name="ping", description="Display SlashCommand to Bot to API Latency. Used for debug purposes.", scope=config_data.config["GUILD_IDS"])
+@client.command(name="ping", description=config_data.lang["PING"], scope=config_data.config["GUILD_IDS"])
 async def _ping(ctx: interactions.CommandContext):
-	await ctx.send(f"Command to Bot to API Latency: ({int(client.latency)}ms)")
+	await ctx.send("{0}{1}ms".format(config_data.lang["PING_RESPONSE"],int(client.latency)))
 
 # /help
-@client.command(name="help", description="Display help and general bot information", scope=config_data.config["GUILD_IDS"])
+@client.command(name="help", description=config_data.lang["DESCRIPTION_HELP"], scope=config_data.config["GUILD_IDS"])
 async def _help(ctx: interactions.CommandContext):
 	await ctx.send(hamyam.help.help(config_data))
 
 # /conditions
-@client.command(name="conditions", description="Display current ham band conditions", scope=config_data.config["GUILD_IDS"])
+@client.command(name="conditions", description=config_data.lang["DESCRIPTION_CONDITIONS"], scope=config_data.config["GUILD_IDS"])
 async def _conditions(ctx: interactions.CommandContext):
 	await ctx.send(embeds=hamyam.conditions.conditions(config_data))
 
 # /muf
-@client.command(name="muf", description="Display current calculated Maximum Usable Frequency information", scope=config_data.config["GUILD_IDS"])
+@client.command(name="muf", description=config_data.lang["DESCRIPTION_MUF"], scope=config_data.config["GUILD_IDS"])
 async def _muf(ctx: interactions.CommandContext):
 	await ctx.send(embeds=hamyam.muf.muf(config_data))
 
 # /bands
-@client.command(name="bands", description="Display ARRL ham bands document", scope=config_data.config["GUILD_IDS"])
+@client.command(name="bands", description=config_data.lang["DESCRIPTION_BANDS"], scope=config_data.config["GUILD_IDS"])
 async def _bands(ctx: interactions.CommandContext):
 	await ctx.send(embeds=hamyam.bands.bands(config_data))
 
 # /ziptogrid
-@client.command(name="ziptogrid", description="Convert a United States Zipcode to a Maidenhead gridsquare location",options=[
+@client.command(name="ziptogrid", description=config_data.lang["DESCRIPTION_ZIPTOGRID"],options=[
 				interactions.Option(
 				name="zipcode",
-				description="United States Zip Code",
+				description=config_data.lang["ZIPCODE"],
 				type=interactions.OptionType.STRING,
 				required=True
 				)], scope=config_data.config["GUILD_IDS"])
