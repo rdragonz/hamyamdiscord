@@ -4,3 +4,4 @@ numpy>=1.24.1
 maidenhead>=1.7.0
 zipcodes>=1.2.0
 discord-py-interactions>=4.3.4
+aiohttp==3.8.2
