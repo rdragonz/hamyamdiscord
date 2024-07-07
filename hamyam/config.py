@@ -11,5 +11,5 @@ class Configuration:
 		with open(config_file) as jsonfile:
 			self.config = json.load(jsonfile)
 
-		with open("./strings/{1}.lang".format(self.config["LANG"])) as langfile:
+		with open("./strings/{0}.lang".format(self.config["LANG"])) as langfile:
 			self.lang = json.load(langfile)
