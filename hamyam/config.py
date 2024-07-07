@@ -9,7 +9,7 @@ class Configuration:
 		
 		self.config_file = config_file
 		with open(config_file) as jsonfile:
-   	 		self.config = json.load(jsonfile)
+			self.config = json.load(jsonfile)
 
-   	 	with open("./strings/{1}.lang".format(self.config["LANG"])) as langfile:
-   	 		self.lang = json.load(langfile)
+	 	with open("./strings/{1}.lang".format(self.config["LANG"])) as langfile:
+	 		self.lang = json.load(langfile)
