@@ -41,7 +41,7 @@ The Server IDs in list format for all of the servers that the bot is a part of. 
 Hamyambot is available in several languages. For a list of supported languages, please check strings/README.md. This value should be set to one of the supported languages listed. By default, this is set to "en_US". If you would like to translate Hamyambot into a language you're familiar with, please check strings/translating.md and submit a Pull request with the changes!
 
 ### Global variables
-The bot uses several global variables to define the URLs used for various lookups and embeds. These are contained within several global variables, and should not be modified unless you know exactly what you are doing. Changes to these values may result in unexpected behavior!
+The bot uses several global variables to define the URLs used for various lookups and embeds. These variables are assumed to be static, and should not be modified unless you know exactly what you are doing. Changes to these values may result in unexpected behavior!
 
 ## Creating a Discord bot
 This guide assumes that you have at least some familiarity with how bots are created from within the Discord developer portal, however some basic information about the correct permissions and inviting the bot to your server are provided here. 
