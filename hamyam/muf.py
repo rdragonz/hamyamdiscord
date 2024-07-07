@@ -30,4 +30,4 @@ def muf(config):
 		)]
 	)
 
-	yield message, image_yield
+	return message, image_yield
