@@ -23,6 +23,7 @@ def muf(config):
 			url="attachments://muf.gif",
 			height=200,
 			width=400,
+		)
 		fields=[interactions.EmbedField(
 			name="",
 			value="[{0}]({1})".format(config.lang["SOURCE"], config.config["CONDITIONS_SOURCE_URL"])
