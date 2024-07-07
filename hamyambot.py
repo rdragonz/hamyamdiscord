@@ -80,7 +80,7 @@ async def _distance(ctx: interactions.CommandContext, gridsquare1: str, gridsqua
 	await ctx.send(embeds=hamyam.distance.distance(gridsquare1, gridsquare2, config_data))
 
 # /ping
-@client.command(name="ping", description=config_data.lang["PING"], scope=config_data.config["GUILD_IDS"])
+@client.command(name="ping", description=config_data.lang["DESCRIPTION_PING"], scope=config_data.config["GUILD_IDS"])
 async def _ping(ctx: interactions.CommandContext):
 	await ctx.send("{0}{1}ms".format(config_data.lang["PING_RESPONSE"],int(client.latency)))
 
