@@ -15,15 +15,15 @@ def muf(config):
 
 	# Now decode it from base64 to a BaseIO byte stream
 	image_bio = BytesIO(base64.b64decode(image_b64))
-
+	image_yield = interactions.File("muf.gif", image_bio)
 	message = interactions.Embed(
 		title="**__{0}__**".format(config.lang["MUF"]),
 		color=7368816,
-		image=interactions.File("muf.gif", image_bio),
+		image="attachments://muf.gif",
 		fields=[interactions.EmbedField(
 			name="",
 			value="[{0}]({1})".format(config.lang["SOURCE"], config.config["CONDITIONS_SOURCE_URL"])
 		)]
 	)
 
-	return message
+	yield message, image_yield

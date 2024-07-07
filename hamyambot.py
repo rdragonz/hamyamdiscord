@@ -97,7 +97,8 @@ async def _conditions(ctx: interactions.CommandContext):
 # /muf
 @client.command(name="muf", description=config_data.lang["DESCRIPTION_MUF"], scope=config_data.config["GUILD_IDS"])
 async def _muf(ctx: interactions.CommandContext):
-	await ctx.send(embeds=hamyam.muf.muf(config_data))
+	embed, image = hamyam.muf.muf(config_data)
+	await ctx.send(embeds=embed, file=image)
 
 # /bands
 @client.command(name="bands", description=config_data.lang["DESCRIPTION_BANDS"], scope=config_data.config["GUILD_IDS"])
