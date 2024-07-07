@@ -1,8 +1,7 @@
 import interactions
 import requests
 import base64
-import re
-
+import interactions
 from io import BytesIO
 
 def muf(config):
@@ -14,17 +13,13 @@ def muf(config):
 	image = requests.get(config.config["MUF_URL"])
 	image_b64 = base64.b64encode(image.content)
 
-	print(image_b64)
-
 	# Now decode it from base64 to a BaseIO byte stream
-	image_bio = BytesIO(base64.b64decode(re.sub("data:image/jpeg;base64", '', image_b64)))
-	# And provide that byte stream to the interactions library
-	image_int = interactions.Image("muf.gif", image_bio)
+	image_bio = BytesIO(base64.b64decode(image_b64))
 
 	message = interactions.Embed(
 		title="**__{0}__**".format(config.lang["MUF"]),
 		color=7368816,
-		image=image_int,
+		file=interactions.File(image_bio),
 		fields=[interactions.EmbedField(
 			name="",
 			value="[{0}]({1})".format(config.lang["SOURCE"], config.config["CONDITIONS_SOURCE_URL"])
