@@ -19,7 +19,7 @@ def muf(config):
 	message = interactions.Embed(
 		title="**__{0}__**".format(config.lang["MUF"]),
 		color=7368816,
-		file=interactions.File(image_bio),
+		file=interactions.File("muf.gif", image_bio),
 		fields=[interactions.EmbedField(
 			name="",
 			value="[{0}]({1})".format(config.lang["SOURCE"], config.config["CONDITIONS_SOURCE_URL"])
