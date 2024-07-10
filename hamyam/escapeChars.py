@@ -1,18 +1,8 @@
 def escapeChars(txt):
 	# Escape potentially unsafe characters
+	# This is currently deprecated. It will be removed as part of an upcoming maintenance update.
 	# Takes: Input text
 	# Returns: String containing escaped characters
 	
-	message = txt
-	temp = message.replace('-', '\-')
-	temp = temp.replace('.', '\.')
-	temp = temp.replace('#', '\#')
-	temp = temp.replace('(', '\(')
-	temp = temp.replace('=', '\=')
-	temp = temp.replace(')', '\)')
-	temp = temp.replace('+', '\+')
-	temp = temp.replace('!', '\!')
-	temp = temp.replace('_', '\_')
-	temp = temp.replace('{', '\{')
-	temp = temp.replace('}', '\}')
-	return temp
+	
+	return txt
