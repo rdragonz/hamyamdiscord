@@ -29,91 +29,90 @@ client = interactions.Client(token=config_data.config["DISCORD_TOKEN"])
 # Define commands
 
 # /dmridbycall
-@client.command(name="dmridbycall", description=config_data.lang["DESCRIPTION_DMRIDBYCALL"],
-	options=[
-		interactions.Option(
-			name="callsign",
-			description=config_data.lang["CALLSIGN"],
-			type=interactions.OptionType.STRING,
-			required=True,
-		),], scope=config_data.config["GUILD_IDS"])
-async def _dmridbycall(ctx: interactions.CommandContext, callsign: str):
+@interactions.slash_command(name="dmridbycall", description=config_data.lang["DESCRIPTION_DMRIDBYCALL"], scopes=config_data.config["GUILD_IDS"])
+@interactions.slash_option(
+	name="callsign",
+	description=config_data.lang["CALLSIGN"],
+	opt_type=interactions.OptionType.STRING,
+	required=True,
+)
+async def _dmridbycall(ctx: interactions.SlashContext, callsign: str):
 	await ctx.send(embeds=hamyam.dmr_by_call.dmr_by_call(callsign, config_data))
 
 # /callbydmrid
-@client.command(name="callbydmrid", description=config_data.lang["DESCRIPTION_CALLBYDMRID"],options=[
-			interactions.Option(
-			name="dmrid",
-			description=config_data.lang["DMR_ID"],
-			type=interactions.OptionType.STRING,
-			required=True
-			)], scope=config_data.config["GUILD_IDS"])
-async def _callbydmrid(ctx: interactions.CommandContext, dmrid: str):
+@interactions.slash_command(name="callbydmrid", description=config_data.lang["DESCRIPTION_CALLBYDMRID"], scopes=config_data.config["GUILD_IDS"])
+@interactions.slash_option(
+	name="dmrid",
+	description=config_data.lang["DMR_ID"],
+	opt_type=interactions.OptionType.STRING,
+	required=True
+)
+async def _callbydmrid(ctx: interactions.SlashContext, dmrid: str):
 	await ctx.send(embeds=hamyam.call_by_dmrid.call_by_dmrid(dmrid, config_data))
 
 # /lookup
-@client.command(name="lookup", description=config_data.lang["DESCRIPTION_LOOKUP"],options=[
-			interactions.Option(
-			name="callsign",
-			description=config_data.lang["CALLSIGN"],
-			type=interactions.OptionType.STRING,
-			required=True
-			)], scope=config_data.config["GUILD_IDS"])
-async def _lookup(ctx: interactions.CommandContext, callsign: str):
+@interactions.slash_command(name="lookup", description=config_data.lang["DESCRIPTION_LOOKUP"], scopes=config_data.config["GUILD_IDS"])
+@interactions.slash_option(
+	name="callsign",
+	description=config_data.lang["CALLSIGN"],
+	opt_type=interactions.OptionType.STRING,
+	required=True
+)
+async def _lookup(ctx: interactions.SlashContext, callsign: str):
 	await ctx.send(embeds=hamyam.lookup_call.lookup_call(callsign, config_data))
 
 # /distance
-@client.command(name="distance", description=config_data.lang["DESCRIPTION_DISTANCE"],options=[
-			interactions.Option(
-			name="gridsquare1",
-			description=config_data.lang["GRIDSQUARE1"],
-			type=interactions.OptionType.STRING,
-			required=True
-			),
-			interactions.Option(
-			name="gridsquare2",
-			description=config_data.lang["GRIDSQUARE2"],
-			type=interactions.OptionType.STRING,
-			required=True
-			)], scope=config_data.config["GUILD_IDS"])
-async def _distance(ctx: interactions.CommandContext, gridsquare1: str, gridsquare2: str):
+@interactions.slash_command(name="distance", description=config_data.lang["DESCRIPTION_DISTANCE"], scopes=config_data.config["GUILD_IDS"])
+@interactions.slash_option(
+	name="gridsquare1",
+	description=config_data.lang["GRIDSQUARE1"],
+	opt_type=interactions.OptionType.STRING,
+	required=True
+)
+@interactions.slash_option(
+	name="gridsquare2",
+	description=config_data.lang["GRIDSQUARE2"],
+	opt_type=interactions.OptionType.STRING,
+	required=True
+) 
+async def _distance(ctx: interactions.SlashContext, gridsquare1: str, gridsquare2: str):
 	await ctx.send(embeds=hamyam.distance.distance(gridsquare1, gridsquare2, config_data))
 
 # /ping
-@client.command(name="ping", description=config_data.lang["DESCRIPTION_PING"], scope=config_data.config["GUILD_IDS"])
-async def _ping(ctx: interactions.CommandContext):
-	await ctx.send("{0}{1}ms".format(config_data.lang["PING_RESPONSE"],int(client.latency)))
+@interactions.slash_command(name="ping", description=config_data.lang["DESCRIPTION_PING"], scopes=config_data.config["GUILD_IDS"])
+async def _ping(ctx: interactions.SlashContext):
+	await ctx.send("{0} {1}ms".format(config_data.lang["PING_RESPONSE"],int(client.latency)))
 
 # /help
-@client.command(name="help", description=config_data.lang["DESCRIPTION_HELP"], scope=config_data.config["GUILD_IDS"])
-async def _help(ctx: interactions.CommandContext):
+@interactions.slash_command(name="help", description=config_data.lang["DESCRIPTION_HELP"], scopes=config_data.config["GUILD_IDS"])
+async def _help(ctx: interactions.SlashContext):
 	await ctx.send(hamyam.help.help(config_data))
 
 # /conditions
-@client.command(name="conditions", description=config_data.lang["DESCRIPTION_CONDITIONS"], scope=config_data.config["GUILD_IDS"])
-async def _conditions(ctx: interactions.CommandContext):
+@interactions.slash_command(name="conditions", description=config_data.lang["DESCRIPTION_CONDITIONS"], scopes=config_data.config["GUILD_IDS"])
+async def _conditions(ctx: interactions.SlashContext):
 	await ctx.send(embeds=hamyam.conditions.conditions(config_data))
 
 # /muf
-@client.command(name="muf", description=config_data.lang["DESCRIPTION_MUF"], scope=config_data.config["GUILD_IDS"])
-async def _muf(ctx: interactions.CommandContext):
+@interactions.slash_command(name="muf", description=config_data.lang["DESCRIPTION_MUF"], scopes=config_data.config["GUILD_IDS"])
+async def _muf(ctx: interactions.SlashContext):
 	embed, image = hamyam.muf.muf(config_data)
 	await ctx.send(embeds=embed, file=image)
 
 # /bands
-@client.command(name="bands", description=config_data.lang["DESCRIPTION_BANDS"], scope=config_data.config["GUILD_IDS"])
-async def _bands(ctx: interactions.CommandContext):
+@interactions.slash_command(name="bands", description=config_data.lang["DESCRIPTION_BANDS"], scopes=config_data.config["GUILD_IDS"])
+async def _bands(ctx: interactions.SlashContext):
 	await ctx.send(embeds=hamyam.bands.bands(config_data))
 
 # /ziptogrid
-@client.command(name="ziptogrid", description=config_data.lang["DESCRIPTION_ZIPTOGRID"],options=[
-				interactions.Option(
-				name="zipcode",
-				description=config_data.lang["ZIPCODE"],
-				type=interactions.OptionType.STRING,
-				required=True
-				)], scope=config_data.config["GUILD_IDS"])
-async def _ziptogrid(ctx: interactions.CommandContext, zipcode: str):
+@interactions.slash_command(name="ziptogrid", description=config_data.lang["DESCRIPTION_ZIPTOGRID"], scopes=config_data.config["GUILD_IDS"])
+@interactions.slash_option(
+	name="zipcode",
+	description=config_data.lang["ZIPCODE"],
+	opt_type=interactions.OptionType.STRING,
+	required=True
+)
+async def _ziptogrid(ctx: interactions.SlashContext, zipcode: str):
 	await ctx.send(embeds=hamyam.ziptogrid.ziptogrid(zipcode, config_data))
 
 def main():
