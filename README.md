@@ -2,7 +2,7 @@
 HamYam bot ported to Discord
 
 ## Installation
-This bot requires a Discord API key, QRZ XML data access, an Imgur Client ID, and Python3.
+This bot requires a Discord API key, QRZ XML data access, and Python3.12 or above.
 
 0. Clone the repository into a file on your machine
 > git clone https://github.com/rdragonz/hamyamdiscord.git
@@ -12,7 +12,7 @@ This bot requires a Discord API key, QRZ XML data access, an Imgur Client ID, an
 3. Run the bot
 > python hamyambot.py
 4. **OPTIONAL:** Set Hamyambot to run as a systemd service on boot
-Edit the included ``hamyambot.service`` file to contain a path to your python3 executable and the downloaded copy of hamyambot. Then:
+Edit the included ``hamyambot.service`` file to contain a path to your python3.12 executable and the downloaded copy of hamyambot. Then:
 > cp hamyambot.service /etc/systemd/system/hamyambot.service
 > service enable hamyambot
 > service start hamyambot
@@ -26,9 +26,6 @@ The username you would normally use to log in to QRZ. This will typically be you
 
 ### QRZ_PASSWORD
 The password you would normally use to log in to QRZ. This will be the password you set when logging in to QRZ. Best security practice does dictate that websites should strive to use API keys wherever possible, however QRZ does not offer API keys for accounts with XML data access.
-
-### IMGUR_CLIENT_ID
-The client ID obtained from a new Imgur application. Please see below for an explanation on why this is required, as well as where to obtain this.
 
 ### DISCORD_TOKEN
 The Discord bot token, explained further below.
@@ -55,21 +52,6 @@ Once you have configured these parameters, simply copy and paste the generated U
 
 ### Note on Guild IDs
 When editing the hamyam.conf file, there is a list for you to insert "guild IDs". These are needed, since new or modified Discord bots can take up to 24 hours to properly sync commands with a server after the bot is first invited. To obtain this ID, follow this guide: https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID- Adding this ID to your configuration will allow the bot to properly sync commands with your server in just a few moments.
-
-## Imgur Client ID
-Due to a potential bug in the interactions.py library that this bot uses, it's not currently possible for bots to embed URLs ending in anything other than a known image file extension. As a temporary workaround, the bot uses Imgur to upload a copy of an image, and obtain a URL that can be embedded in a Discord message. To obtain this Client ID, you will need to create an Imgur account. New Imgur accounts do require a verified phone number, and there is no workaround to this. Any files uploaded to Imgur by the bot are not linked to your Imgur account.
-
-### Obtaining the Imgur Client ID
-Once you have an Imgur account, visit https://api.imgur.com/oauth2/addclient and fill out the form with the proper details. A website and description are not required, but the email address field and callback URL must be populated for this to work correctly. 
-
-Since we do not need a callback URL, you can use the Postman dummy callback URL.
-> https://www.getpostman.com/oauth2/callback
-
-![](https://i.imgur.com/ne41kHE.png)
-
-Finally, fill out the Captcha at the bottom of the page and click "Submit". You will be presented with both a Client ID and a Client Secret.
-
-**You only need the Client ID! The Client Secret can be ignored!**
 
 ## Usage
 Once the bot is running and added to a Discord server, you can then run commands to perform various functions. Run the "/help" command for a list of available commands, and their parameters, as well as to display other information about the bot. You can also type a single "/" to see a list of commands available to be run in your server.
