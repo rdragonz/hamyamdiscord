@@ -16,3 +16,7 @@ Please use the "Pull Request" feature available on GitHub at the source of the o
 In the pull request, please ensure that your branch is fully up-to-date with the latest version of HamYam bot and ensure that the only modified files in the pull request are addtions of the language file and/or a corresponding help.txt file.
 
 If you include changes that are not on the current "main" branch of the source repository, your pull request will be rejected without review.
+
+## Fixing translation errors in existing translations
+
+If a translation error is noticed, a pull request can be made that fixes the corresponding .lang file, or help-{LOCALIZATION CODE}.txt file. The corrected translation will be reviewed for accuracy. 
